@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+  <properties resource="org/apache/ibatis/mytest/test.properties">
+    <property name="test" value="haha"/>
+  </properties>
+  <settings>
+    <setting name="cacheEnabled" value="true"/>
+  </settings>
+  <typeAliases>
+    <typeAlias type="org.apache.ibatis.mytest.User" alias="User"/>
+<!--    <package name="org.apache.ibatis.mytest"/>-->
+  </typeAliases>
+  <environments default="development">
+    <environment id="development">
+      <transactionManager type="JDBC"/>
+      <dataSource type="POOLED">
+        <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://172.22.40.9:3306/hello?useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false&amp;serverTimezone=UTC"/>
+        <property name="username" value="root"/>
+        <property name="password" value="123456"/>
+      </dataSource>
+    </environment>
+  </environments>
+<!--  配置了这个，在mapper里不指定这个databaseId的话就不会解析这个sql-->
+<!--  <databaseIdProvider type="DB_VENDOR">-->
+<!--    <property name="MySQL" value="mysql"/>-->
+<!--  </databaseIdProvider>-->
+  <mappers>
+    <mapper resource="org/apache/ibatis/mytest/UserMapper.xml"/>
+  </mappers>
+</configuration>
