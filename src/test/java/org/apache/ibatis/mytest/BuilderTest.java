@@ -23,7 +23,7 @@ public class BuilderTest {
   //@Before
   public void getDataSource() {
     DruidDataSource druidDataSource = new DruidDataSource();
-    druidDataSource.setUrl("jdbc:mysql://172.22.40.9:3306/hello?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC");
+    druidDataSource.setUrl("jdbc:mysql://172.21.116.209:3306/hello?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC");
     druidDataSource.setUsername("root");
     druidDataSource.setPassword("123456");
     this.dataSource = druidDataSource;
