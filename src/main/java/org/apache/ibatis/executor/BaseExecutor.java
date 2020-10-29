@@ -46,6 +46,8 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
  * @author Clinton Begin
+ * 模板方法模式
+ * 一些具体的实现放在子类中了
  */
 public abstract class BaseExecutor implements Executor {
 
@@ -66,6 +68,7 @@ public abstract class BaseExecutor implements Executor {
     this.transaction = transaction;
     this.deferredLoads = new ConcurrentLinkedQueue<>();
     this.localCache = new PerpetualCache("LocalCache");
+    // 调用存储过程的返回值
     this.localOutputParameterCache = new PerpetualCache("LocalOutputParameterCache");
     this.closed = false;
     this.configuration = configuration;
@@ -131,6 +134,7 @@ public abstract class BaseExecutor implements Executor {
 
   @Override
   public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
+    // 先获取sql信息
     BoundSql boundSql = ms.getBoundSql(parameter);
     CacheKey key = createCacheKey(ms, parameter, rowBounds, boundSql);
     return query(ms, parameter, rowBounds, resultHandler, key, boundSql);
@@ -320,12 +324,16 @@ public abstract class BaseExecutor implements Executor {
 
   private <E> List<E> queryFromDatabase(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
     List<E> list;
+    // 先往缓存里放一个正在执行的标志
     localCache.putObject(key, EXECUTION_PLACEHOLDER);
     try {
+      // 子类实现
       list = doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
     } finally {
+      // 删除旧缓存
       localCache.removeObject(key);
     }
+    // 换为新的缓存
     localCache.putObject(key, list);
     if (ms.getStatementType() == StatementType.CALLABLE) {
       localOutputParameterCache.putObject(key, parameter);

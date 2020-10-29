@@ -49,6 +49,7 @@ public class MapperProxyFactory<T> {
   }
 
   public T newInstance(SqlSession sqlSession) {
+    // 其实就是InvocationHandler，就是mapper真正的执行逻辑
     final MapperProxy<T> mapperProxy = new MapperProxy<>(sqlSession, mapperInterface, methodCache);
     return newInstance(mapperProxy);
   }

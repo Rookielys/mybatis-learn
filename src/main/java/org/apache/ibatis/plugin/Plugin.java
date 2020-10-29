@@ -30,8 +30,11 @@ import org.apache.ibatis.reflection.ExceptionUtil;
  */
 public class Plugin implements InvocationHandler {
 
+  // 目标代理类
   private final Object target;
+  // 拦截器，相当于我们的自定义逻辑
   private final Interceptor interceptor;
+  // 拦截器上注解的信息
   private final Map<Class<?>, Set<Method>> signatureMap;
 
   private Plugin(Object target, Interceptor interceptor, Map<Class<?>, Set<Method>> signatureMap) {
@@ -56,6 +59,7 @@ public class Plugin implements InvocationHandler {
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     try {
+      // 当Method是此拦截器注解里配置的类的方法是采取执行拦截器方法
       Set<Method> methods = signatureMap.get(method.getDeclaringClass());
       if (methods != null && methods.contains(method)) {
         return interceptor.intercept(new Invocation(target, method, args));
@@ -67,11 +71,13 @@ public class Plugin implements InvocationHandler {
   }
 
   private static Map<Class<?>, Set<Method>> getSignatureMap(Interceptor interceptor) {
+    // 获取@Intercepts注解
     Intercepts interceptsAnnotation = interceptor.getClass().getAnnotation(Intercepts.class);
     // issue #251
     if (interceptsAnnotation == null) {
       throw new PluginException("No @Intercepts annotation was found in interceptor " + interceptor.getClass().getName());
     }
+    // 获取@Signature注解
     Signature[] sigs = interceptsAnnotation.value();
     Map<Class<?>, Set<Method>> signatureMap = new HashMap<>();
     for (Signature sig : sigs) {

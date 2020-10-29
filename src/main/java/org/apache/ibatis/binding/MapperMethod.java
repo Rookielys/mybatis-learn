@@ -283,6 +283,7 @@ public class MapperMethod {
     private final String mapKey;
     private final Integer resultHandlerIndex;
     private final Integer rowBoundsIndex;
+    // 从方法的@Param注解中获取参数名
     private final ParamNameResolver paramNameResolver;
 
     public MethodSignature(Configuration configuration, Class<?> mapperInterface, Method method) {

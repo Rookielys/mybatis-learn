@@ -34,7 +34,7 @@ import org.apache.ibatis.session.SqlSession;
 public class MapperRegistry {
 
   private final Configuration config;
-  // mapper 类  生成类实例的代理工厂
+  // mapper类 --> 生成mapper类实例的代理工厂
   private final Map<Class<?>, MapperProxyFactory<?>> knownMappers = new HashMap<>();
 
   public MapperRegistry(Configuration config) {
@@ -48,6 +48,7 @@ public class MapperRegistry {
       throw new BindingException("Type " + type + " is not known to the MapperRegistry.");
     }
     try {
+      // 创建mapper接口的代理类
       return mapperProxyFactory.newInstance(sqlSession);
     } catch (Exception e) {
       throw new BindingException("Error getting mapper instance. Cause: " + e, e);

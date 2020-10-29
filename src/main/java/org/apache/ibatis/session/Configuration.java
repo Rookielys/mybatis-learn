@@ -671,6 +671,7 @@ public class Configuration {
     executorType = executorType == null ? defaultExecutorType : executorType;
     executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
     Executor executor;
+    // 创建不同类型的执行器
     if (ExecutorType.BATCH == executorType) {
       executor = new BatchExecutor(this, transaction);
     } else if (ExecutorType.REUSE == executorType) {
@@ -681,6 +682,7 @@ public class Configuration {
     if (cacheEnabled) {
       executor = new CachingExecutor(executor);
     }
+    // 将执行器进行包装，返回代理类
     executor = (Executor) interceptorChain.pluginAll(executor);
     return executor;
   }
@@ -974,6 +976,7 @@ public class Configuration {
 
     private static final long serialVersionUID = -4950446264854982944L;
     private final String name;
+    // 就是用来生成一个冲突信息
     private BiFunction<V, V, String> conflictMessageProducer;
 
     public StrictMap(String name, int initialCapacity, float loadFactor) {

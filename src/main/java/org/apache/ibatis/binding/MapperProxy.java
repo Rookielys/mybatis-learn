@@ -82,6 +82,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
       if (Object.class.equals(method.getDeclaringClass())) {
         return method.invoke(this, args);
       } else {
+        // 获取方法的执行器，执行器里也只有一个invoke方法
         return cachedInvoker(method).invoke(proxy, method, args, sqlSession);
       }
     } catch (Throwable t) {
@@ -100,6 +101,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
       }
 
       return methodCache.computeIfAbsent(method, m -> {
+        // 不是很理解，可能跟接口的默认方法和private方法有关
         if (m.isDefault()) {
           try {
             if (privateLookupInMethod == null) {
@@ -112,6 +114,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
             throw new RuntimeException(e);
           }
         } else {
+          // 一般走这个逻辑
           return new PlainMethodInvoker(new MapperMethod(mapperInterface, method, sqlSession.getConfiguration()));
         }
       });
@@ -139,6 +142,7 @@ public class MapperProxy<T> implements InvocationHandler, Serializable {
     Object invoke(Object proxy, Method method, Object[] args, SqlSession sqlSession) throws Throwable;
   }
 
+  // 只有一个invoke方法，用来执行MapperMethod的execute方法
   private static class PlainMethodInvoker implements MapperMethodInvoker {
     private final MapperMethod mapperMethod;
 

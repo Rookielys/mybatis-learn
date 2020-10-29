@@ -30,18 +30,24 @@ import org.apache.ibatis.session.Configuration;
 
 /**
  * @author Clinton Begin
+ * sql语句标签的信息
  */
 public final class MappedStatement {
-
+  // mapper.xml的路径
   private String resource;
   private Configuration configuration;
+  // sql标签的id
   private String id;
   private Integer fetchSize;
   private Integer timeout;
+  // 表示是普通sql还是存储过程
+  // 一般sql是PREPARED
   private StatementType statementType;
   private ResultSetType resultSetType;
+  // sql语句相关，包括sql文本，参数等
   private SqlSource sqlSource;
   private Cache cache;
+  // 一般不用
   private ParameterMap parameterMap;
   private List<ResultMap> resultMaps;
   private boolean flushCacheRequired;
