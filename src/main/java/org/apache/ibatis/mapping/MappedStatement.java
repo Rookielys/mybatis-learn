@@ -40,12 +40,13 @@ public final class MappedStatement {
   private String id;
   private Integer fetchSize;
   private Integer timeout;
-  // 表示是普通sql还是存储过程
+  // 表示是普通sql还是存储过程, 对应于jdbc的statement类型
   // 一般sql是PREPARED
   private StatementType statementType;
   private ResultSetType resultSetType;
   // sql语句相关，包括sql文本，参数等
   private SqlSource sqlSource;
+  // 一级缓存，作用域是同一个mapper文件
   private Cache cache;
   // 一般不用
   private ParameterMap parameterMap;
@@ -310,6 +311,7 @@ public final class MappedStatement {
   public BoundSql getBoundSql(Object parameterObject) {
     BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
     List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
+    // 为啥
     if (parameterMappings == null || parameterMappings.isEmpty()) {
       boundSql = new BoundSql(configuration, boundSql.getSql(), parameterMap.getParameterMappings(), parameterObject);
     }

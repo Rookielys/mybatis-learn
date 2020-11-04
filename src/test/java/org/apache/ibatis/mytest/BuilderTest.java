@@ -15,6 +15,8 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class BuilderTest {
 
@@ -47,7 +49,9 @@ public class BuilderTest {
     InputStream inputStream = Resources.getResourceAsStream(resource);
     SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
     SqlSession sqlSession = sqlSessionFactory.openSession();
-    UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-    System.out.println(userMapper.selectUserById(1));
+//    UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+//    System.out.println(userMapper.selectUserById(1));
+    List<User> userList = sqlSession.selectList("org.apache.ibatis.mytest.UserMapper.selectUserById", 1);
+    System.out.println(userList);
   }
 }
