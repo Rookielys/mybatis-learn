@@ -27,6 +27,7 @@ public interface ParameterHandler {
 
   Object getParameterObject();
 
+  // 给PreparedStatement设置参数，jdbc
   void setParameters(PreparedStatement ps) throws SQLException;
 
 }

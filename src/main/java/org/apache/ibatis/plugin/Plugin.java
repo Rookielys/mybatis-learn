@@ -59,6 +59,7 @@ public class Plugin implements InvocationHandler {
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     try {
+      // 先执行拦截器，再执行target方法
       // 当Method是此拦截器注解里配置的类的方法是采取执行拦截器方法
       Set<Method> methods = signatureMap.get(method.getDeclaringClass());
       if (methods != null && methods.contains(method)) {

@@ -60,6 +60,7 @@ public abstract class BaseExecutor implements Executor {
   protected ConcurrentLinkedQueue<DeferredLoad> deferredLoads;
   // 二级缓存，作用域默认是session级别的
   protected PerpetualCache localCache;
+  // 存储过程的结果缓存
   protected PerpetualCache localOutputParameterCache;
   protected Configuration configuration;
 
@@ -336,10 +337,10 @@ public abstract class BaseExecutor implements Executor {
       // 子类实现
       list = doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
     } finally {
-      // 删除旧缓存
+      // 删除旧缓存，一定会删除
       localCache.removeObject(key);
     }
-    // 换为新的缓存
+    // 换为新的缓存，即使有resultHandler，还是会存缓存
     localCache.putObject(key, list);
     if (ms.getStatementType() == StatementType.CALLABLE) {
       localOutputParameterCache.putObject(key, parameter);
