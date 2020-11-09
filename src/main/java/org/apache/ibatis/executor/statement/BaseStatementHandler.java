@@ -35,6 +35,7 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
  * @author Clinton Begin
+ * 主要重写了prepare，用来生成一个Statement
  */
 public abstract class BaseStatementHandler implements StatementHandler {
 
@@ -60,13 +61,15 @@ public abstract class BaseStatementHandler implements StatementHandler {
     this.objectFactory = configuration.getObjectFactory();
 
     if (boundSql == null) { // issue #435, get the key before calculating the statement
+      // 生成主键
       generateKeys(parameterObject);
       boundSql = mappedStatement.getBoundSql(parameterObject);
     }
 
     this.boundSql = boundSql;
-
+    // 都被过滤器拦截
     this.parameterHandler = configuration.newParameterHandler(mappedStatement, parameterObject, boundSql);
+    // 处理数据库返回的结果
     this.resultSetHandler = configuration.newResultSetHandler(executor, mappedStatement, rowBounds, parameterHandler, resultHandler, boundSql);
   }
 
@@ -85,8 +88,11 @@ public abstract class BaseStatementHandler implements StatementHandler {
     ErrorContext.instance().sql(boundSql.getSql());
     Statement statement = null;
     try {
+      // 根据jdbc获取一个statement
       statement = instantiateStatement(connection);
+      // 给statement设置Timeout
       setStatementTimeout(statement, transactionTimeout);
+      // 给statement设置FetchSize
       setFetchSize(statement);
       return statement;
     } catch (SQLException e) {
@@ -110,6 +116,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
     if (queryTimeout != null) {
       stmt.setQueryTimeout(queryTimeout);
     }
+    // 如果queryTimeout为0或大于transactionTimeout，用transactionTimeout
     StatementUtil.applyTransactionTimeout(stmt, queryTimeout, transactionTimeout);
   }
 

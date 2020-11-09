@@ -46,6 +46,7 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
  * @author Clinton Begin
+ * 执行一些公共操作
  * 模板方法模式
  * 一些具体的实现放在子类中了
  */
@@ -57,7 +58,9 @@ public abstract class BaseExecutor implements Executor {
   protected Executor wrapper;
 
   protected ConcurrentLinkedQueue<DeferredLoad> deferredLoads;
+  // 二级缓存，作用域默认是session级别的
   protected PerpetualCache localCache;
+  // 存储过程的结果缓存
   protected PerpetualCache localOutputParameterCache;
   protected Configuration configuration;
 
@@ -136,6 +139,7 @@ public abstract class BaseExecutor implements Executor {
   public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException {
     // 先获取sql信息
     BoundSql boundSql = ms.getBoundSql(parameter);
+    // 生成缓存key
     CacheKey key = createCacheKey(ms, parameter, rowBounds, boundSql);
     return query(ms, parameter, rowBounds, resultHandler, key, boundSql);
   }
@@ -148,11 +152,13 @@ public abstract class BaseExecutor implements Executor {
       throw new ExecutorException("Executor was closed.");
     }
     if (queryStack == 0 && ms.isFlushCacheRequired()) {
+      // 清空二级缓存
       clearLocalCache();
     }
     List<E> list;
     try {
       queryStack++;
+      // ResultHandler：自定义处理原始数据的逻辑，如果不为null，就不能用缓存里的数据
       list = resultHandler == null ? (List<E>) localCache.getObject(key) : null;
       if (list != null) {
         handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
@@ -168,6 +174,7 @@ public abstract class BaseExecutor implements Executor {
       }
       // issue #601
       deferredLoads.clear();
+      // 直接清除缓存
       if (configuration.getLocalCacheScope() == LocalCacheScope.STATEMENT) {
         // issue #482
         clearLocalCache();
@@ -330,10 +337,10 @@ public abstract class BaseExecutor implements Executor {
       // 子类实现
       list = doQuery(ms, parameter, rowBounds, resultHandler, boundSql);
     } finally {
-      // 删除旧缓存
+      // 删除旧缓存，一定会删除
       localCache.removeObject(key);
     }
-    // 换为新的缓存
+    // 换为新的缓存，即使有resultHandler，还是会存缓存
     localCache.putObject(key, list);
     if (ms.getStatementType() == StatementType.CALLABLE) {
       localOutputParameterCache.putObject(key, parameter);
