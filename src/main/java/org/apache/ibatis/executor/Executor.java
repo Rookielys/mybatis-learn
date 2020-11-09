@@ -29,6 +29,7 @@ import org.apache.ibatis.transaction.Transaction;
 
 /**
  * @author Clinton Begin
+ * 执行器，用来执行用户操作
  */
 public interface Executor {
 
@@ -54,6 +55,7 @@ public interface Executor {
 
   void clearLocalCache();
 
+  // 延迟加载
   void deferLoad(MappedStatement ms, MetaObject resultObject, String property, CacheKey key, Class<?> targetType);
 
   Transaction getTransaction();

@@ -153,6 +153,7 @@ public class ParamNameResolver {
    * @since 3.5.5
    */
   public static Object wrapToMapIfCollection(Object object, String actualParamName) {
+    // 这里感觉有点问题啊，如果object是个list，那map里不久有两份一样的数据了吗？
     if (object instanceof Collection) {
       ParamMap<Object> map = new ParamMap<>();
       map.put("collection", object);
@@ -161,7 +162,7 @@ public class ParamNameResolver {
       }
       Optional.ofNullable(actualParamName).ifPresent(name -> map.put(name, object));
       return map;
-    } else if (object != null && object.getClass().isArray()) {
+    } else if (object != null && object.getClass().isArray()) { // object.getClass().isArray() 判断对象是否是数组
       ParamMap<Object> map = new ParamMap<>();
       map.put("array", object);
       Optional.ofNullable(actualParamName).ifPresent(name -> map.put(name, object));

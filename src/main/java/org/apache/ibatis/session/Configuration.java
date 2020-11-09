@@ -824,6 +824,7 @@ public class Configuration {
   }
 
   public MappedStatement getMappedStatement(String id, boolean validateIncompleteStatements) {
+    // 这一步不明白，可能要结合解析xml文件的逻辑来看了
     if (validateIncompleteStatements) {
       buildAllStatements();
     }

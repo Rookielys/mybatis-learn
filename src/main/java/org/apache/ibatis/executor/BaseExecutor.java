@@ -61,6 +61,7 @@ public abstract class BaseExecutor implements Executor {
   // 二级缓存，作用域默认是session级别的
   protected PerpetualCache localCache;
   // 存储过程的结果缓存
+  // PerpetualCache: 就是一个带名字的hashmap
   protected PerpetualCache localOutputParameterCache;
   protected Configuration configuration;
 
@@ -75,6 +76,7 @@ public abstract class BaseExecutor implements Executor {
     this.localOutputParameterCache = new PerpetualCache("LocalOutputParameterCache");
     this.closed = false;
     this.configuration = configuration;
+    // 是自己
     this.wrapper = this;
   }
 
@@ -90,6 +92,7 @@ public abstract class BaseExecutor implements Executor {
   public void close(boolean forceRollback) {
     try {
       try {
+        // 清缓存和statement
         rollback(forceRollback);
       } finally {
         if (transaction != null) {
@@ -152,7 +155,7 @@ public abstract class BaseExecutor implements Executor {
       throw new ExecutorException("Executor was closed.");
     }
     if (queryStack == 0 && ms.isFlushCacheRequired()) {
-      // 清空二级缓存
+      // 清空一级缓存
       clearLocalCache();
     }
     List<E> list;
