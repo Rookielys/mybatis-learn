@@ -6,4 +6,6 @@ public interface UserMapper {
 
   //@Select("select * from myuser where id = #{id}")
   User selectUserById(Integer id);
+
+  int updateUser(Integer id);
 }

@@ -58,6 +58,9 @@ public class BatchExecutor extends BaseExecutor {
     final BoundSql boundSql = handler.getBoundSql();
     final String sql = boundSql.getSql();
     final Statement stmt;
+    // 如果和上一次提交的sql一样，就只往statement里设置参数
+    // 但是如果两个相同的sql不是相邻着添加的，就没有batch的效果了
+    // 参照jdbc PreparedStatement addBatch用法
     if (sql.equals(currentSql) && ms.equals(currentStatement)) {
       int last = statementList.size() - 1;
       stmt = statementList.get(last);
@@ -74,7 +77,9 @@ public class BatchExecutor extends BaseExecutor {
       statementList.add(stmt);
       batchResultList.add(new BatchResult(ms, sql, parameterObject));
     }
+    // Statement addBatch
     handler.batch(stmt);
+    // 为啥返回这个
     return BATCH_UPDATE_RETURN_VALUE;
   }
 

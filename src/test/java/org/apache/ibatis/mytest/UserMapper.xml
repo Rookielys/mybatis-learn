@@ -6,4 +6,8 @@
   <select id="selectUserById" resultType="org.apache.ibatis.mytest.User" parameterType="int">
     select * from myuser where id = #{HAHA}
   </select>
+
+  <update id="updateUser" parameterType="int">
+    update myuser set name = 'lala' where id = #{HAHA}
+  </update>
 </mapper>
