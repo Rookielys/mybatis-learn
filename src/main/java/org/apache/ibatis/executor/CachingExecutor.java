@@ -96,8 +96,10 @@ public class CachingExecutor implements Executor {
       throws SQLException {
     Cache cache = ms.getCache();
     if (cache != null) {
+      // ms的这个配置一二级缓存都可以用
       flushCacheIfRequired(ms);
       if (ms.isUseCache() && resultHandler == null) {
+        // 保证存储过程没有out类型的参数
         ensureNoOutParams(ms, boundSql);
         @SuppressWarnings("unchecked")
         List<E> list = (List<E>) tcm.getObject(cache, key);

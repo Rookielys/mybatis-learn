@@ -52,6 +52,7 @@ public class TransactionalCacheManager {
   }
 
   private TransactionalCache getTransactionalCache(Cache cache) {
+    // 代理了ms中的cache
     return transactionalCaches.computeIfAbsent(cache, TransactionalCache::new);
   }
 

@@ -46,8 +46,11 @@ public class TransactionalCache implements Cache {
 
   public TransactionalCache(Cache delegate) {
     this.delegate = delegate;
+    // 提交清除
     this.clearOnCommit = false;
+    // 提交时添加的
     this.entriesToAddOnCommit = new HashMap<>();
+    // 没命中缓存的
     this.entriesMissedInCache = new HashSet<>();
   }
 

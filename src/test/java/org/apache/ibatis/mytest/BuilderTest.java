@@ -47,15 +47,18 @@ public class BuilderTest {
     String resource = "org/apache/ibatis/mytest/mybatis-config.xml";
     InputStream inputStream = Resources.getResourceAsStream(resource);
     SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
-    SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH);
+    SqlSession sqlSession = sqlSessionFactory.openSession();
+    SqlSession sqlSession2 = sqlSessionFactory.openSession();
 //    UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
 //    System.out.println(userMapper.selectUserById(1));
-    //List<User> userList = sqlSession.selectList("org.apache.ibatis.mytest.UserMapper.selectUserById", 1);
-    //List<User> userList2 = sqlSession.selectList("org.apache.ibatis.mytest.UserMapper.selectUserById", 2);
-    int update = sqlSession.update("org.apache.ibatis.mytest.UserMapper.updateUser", 1);
-    List<BatchResult> batchResults = sqlSession.flushStatements();
-    sqlSession.commit();
-    System.out.println(Arrays.toString(batchResults.get(0).getUpdateCounts()));
+    List<User> userList = sqlSession.selectList("org.apache.ibatis.mytest.UserMapper.selectUserById", 1);
+    sqlSession.close();
+    List<User> userList2 = sqlSession2.selectList("org.apache.ibatis.mytest.UserMapper.selectUserById", 1);
+    sqlSession2.close();
+//    int update = sqlSession.update("org.apache.ibatis.mytest.UserMapper.updateUser", 1);
+//    List<BatchResult> batchResults = sqlSession.flushStatements();
+//    sqlSession.commit();
+//    System.out.println(Arrays.toString(batchResults.get(0).getUpdateCounts()));
   }
 
 }
