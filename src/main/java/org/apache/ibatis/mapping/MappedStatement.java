@@ -39,6 +39,7 @@ public final class MappedStatement {
   // sql标签的id
   private String id;
   private Integer fetchSize;
+  // statement的超时时间，创建statement的时候会设置，同时考虑configuration中配置的默认值
   private Integer timeout;
   // 表示是普通sql还是存储过程, 对应于jdbc的statement类型
   // 一般sql是PREPARED
@@ -56,7 +57,9 @@ public final class MappedStatement {
   private boolean resultOrdered;
   private SqlCommandType sqlCommandType;
   private KeyGenerator keyGenerator;
+  // 插入时主键对应的java属性
   private String[] keyProperties;
+  // 返回主键是对应的数据库列名
   private String[] keyColumns;
   private boolean hasNestedResultMaps;
   private String databaseId;

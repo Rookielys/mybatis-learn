@@ -645,6 +645,8 @@ public class Configuration {
   }
 
   public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
+    // lang是指生成动态sql使用的语言，默认的是xml
+    // DefaultParameterHandler
     ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement, parameterObject, boundSql);
     // 过滤器拦截
     parameterHandler = (ParameterHandler) interceptorChain.pluginAll(parameterHandler);
