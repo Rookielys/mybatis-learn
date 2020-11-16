@@ -24,6 +24,7 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
  * @author Clinton Begin
+ * #{}或者${}可以配置的东西
  */
 public class ParameterMapping {
 

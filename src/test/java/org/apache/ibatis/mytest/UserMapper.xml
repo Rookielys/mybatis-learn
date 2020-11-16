@@ -5,7 +5,7 @@
 <mapper namespace="org.apache.ibatis.mytest.UserMapper">
   <cache/>
   <select id="selectUserById" resultType="org.apache.ibatis.mytest.User" parameterType="int">
-    select * from myuser where id = #{HAHA}
+    select * from myuser where id = #{id}
   </select>
 
   <update id="updateUser" parameterType="int">

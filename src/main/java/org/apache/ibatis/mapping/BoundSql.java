@@ -38,6 +38,7 @@ public class BoundSql {
   private final String sql;
   private final List<ParameterMapping> parameterMappings;
   private final Object parameterObject;
+  // 从动态sql中解析出来的一些信息
   private final Map<String, Object> additionalParameters;
   private final MetaObject metaParameters;
 

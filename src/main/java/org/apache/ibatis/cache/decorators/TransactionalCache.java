@@ -50,7 +50,7 @@ public class TransactionalCache implements Cache {
     this.clearOnCommit = false;
     // 提交时添加的
     this.entriesToAddOnCommit = new HashMap<>();
-    // 没命中缓存的
+    // 没命中缓存的key
     this.entriesMissedInCache = new HashSet<>();
   }
 
@@ -95,6 +95,7 @@ public class TransactionalCache implements Cache {
     entriesToAddOnCommit.clear();
   }
 
+  // 将entriesToAddOnCommit和entriesMissedInCache中的缓存添加到cache中
   public void commit() {
     if (clearOnCommit) {
       delegate.clear();
@@ -120,6 +121,7 @@ public class TransactionalCache implements Cache {
     }
     for (Object entry : entriesMissedInCache) {
       if (!entriesToAddOnCommit.containsKey(entry)) {
+        // 添加个null值有什么用
         delegate.putObject(entry, null);
       }
     }
