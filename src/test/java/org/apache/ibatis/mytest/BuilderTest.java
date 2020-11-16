@@ -53,8 +53,8 @@ public class BuilderTest {
 //    System.out.println(userMapper.selectUserById(1));
     List<User> userList = sqlSession.selectList("org.apache.ibatis.mytest.UserMapper.selectUserById", 1);
     sqlSession.close();
-    List<User> userList2 = sqlSession2.selectList("org.apache.ibatis.mytest.UserMapper.selectUserById", 1);
-    sqlSession2.close();
+//    List<User> userList2 = sqlSession2.selectList("org.apache.ibatis.mytest.UserMapper.selectUserById", 1);
+//    sqlSession2.close();
 //    int update = sqlSession.update("org.apache.ibatis.mytest.UserMapper.updateUser", 1);
 //    List<BatchResult> batchResults = sqlSession.flushStatements();
 //    sqlSession.commit();

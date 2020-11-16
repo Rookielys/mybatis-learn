@@ -108,6 +108,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
 
   protected void setStatementTimeout(Statement stmt, Integer transactionTimeout) throws SQLException {
     Integer queryTimeout = null;
+    // ms中配置的超时时间优先级最高，configuration次之
     if (mappedStatement.getTimeout() != null) {
       queryTimeout = mappedStatement.getTimeout();
     } else if (configuration.getDefaultStatementTimeout() != null) {
@@ -121,6 +122,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
   }
 
   protected void setFetchSize(Statement stmt) throws SQLException {
+    // ms中配置的优先级最高，configuration次之
     Integer fetchSize = mappedStatement.getFetchSize();
     if (fetchSize != null) {
       stmt.setFetchSize(fetchSize);

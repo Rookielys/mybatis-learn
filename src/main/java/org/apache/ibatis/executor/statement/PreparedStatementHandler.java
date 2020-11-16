@@ -76,6 +76,7 @@ public class PreparedStatementHandler extends BaseStatementHandler {
   @Override
   protected Statement instantiateStatement(Connection connection) throws SQLException {
     String sql = boundSql.getSql();
+    // configuration.isUseGeneratedKeys() && SqlCommandType.INSERT.equals(sqlCommandType)
     if (mappedStatement.getKeyGenerator() instanceof Jdbc3KeyGenerator) {
       String[] keyColumnNames = mappedStatement.getKeyColumns();
       if (keyColumnNames == null) {
@@ -83,7 +84,7 @@ public class PreparedStatementHandler extends BaseStatementHandler {
       } else {
         return connection.prepareStatement(sql, keyColumnNames);
       }
-    } else if (mappedStatement.getResultSetType() == ResultSetType.DEFAULT) {
+    } else if (mappedStatement.getResultSetType() == ResultSetType.DEFAULT) { // 默认就是DEFAULT
       return connection.prepareStatement(sql);
     } else {
       return connection.prepareStatement(sql, mappedStatement.getResultSetType().getValue(), ResultSet.CONCUR_READ_ONLY);
