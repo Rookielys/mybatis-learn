@@ -184,12 +184,14 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     final List<Object> multipleResults = new ArrayList<>();
 
     int resultSetCount = 0;
-    // 获取结果集和一些元数据
+    // 获取结果集的一些字段信息
     ResultSetWrapper rsw = getFirstResultSet(stmt);
 
     List<ResultMap> resultMaps = mappedStatement.getResultMaps();
     int resultMapCount = resultMaps.size();
+    // 有查询结果是否有配置resultMap
     validateResultMapsCount(rsw, resultMapCount);
+    // 考虑到多结果集的极端情况
     while (rsw != null && resultMapCount > resultSetCount) {
       ResultMap resultMap = resultMaps.get(resultSetCount);
       handleResultSet(rsw, resultMap, multipleResults, null);
@@ -234,6 +236,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     return new DefaultCursor<>(this, resultMap, rsw, rowBounds);
   }
 
+  // 获取第一个结果集，因为在一些特殊情况下驱动程序不会将结果作为第一个数据返回
   private ResultSetWrapper getFirstResultSet(Statement stmt) throws SQLException {
     ResultSet rs = stmt.getResultSet();
     while (rs == null) {

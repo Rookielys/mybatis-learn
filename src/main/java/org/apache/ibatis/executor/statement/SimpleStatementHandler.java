@@ -34,6 +34,9 @@ import org.apache.ibatis.session.RowBounds;
 
 /**
  * @author Clinton Begin
+ * 创建的是Statement对象
+ * 一般用于无参数的sql
+ * 如果有参数，需要自己拼接参数
  */
 public class SimpleStatementHandler extends BaseStatementHandler {
 

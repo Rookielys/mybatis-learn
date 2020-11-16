@@ -65,6 +65,7 @@ public class DefaultParameterHandler implements ParameterHandler {
     if (parameterMappings != null) {
       for (int i = 0; i < parameterMappings.size(); i++) {
         ParameterMapping parameterMapping = parameterMappings.get(i);
+        // 这里处理的都是非out类型的参数
         if (parameterMapping.getMode() != ParameterMode.OUT) {
           Object value;
           String propertyName = parameterMapping.getProperty();

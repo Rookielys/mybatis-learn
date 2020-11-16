@@ -92,6 +92,7 @@ public class CallableStatementHandler extends BaseStatementHandler {
 
   @Override
   public void parameterize(Statement statement) throws SQLException {
+    // 设置out或inout类型的参数，不在parameterhandler中处理
     registerOutputParameters((CallableStatement) statement);
     parameterHandler.setParameters((CallableStatement) statement);
   }
@@ -101,6 +102,7 @@ public class CallableStatementHandler extends BaseStatementHandler {
     for (int i = 0, n = parameterMappings.size(); i < n; i++) {
       ParameterMapping parameterMapping = parameterMappings.get(i);
       if (parameterMapping.getMode() == ParameterMode.OUT || parameterMapping.getMode() == ParameterMode.INOUT) {
+        // 一定要有jdbctype
         if (null == parameterMapping.getJdbcType()) {
           throw new ExecutorException("The JDBC Type must be specified for output parameter.  Parameter: " + parameterMapping.getProperty());
         } else {

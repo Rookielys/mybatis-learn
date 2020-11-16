@@ -108,6 +108,7 @@ public class Configuration {
   protected boolean aggressiveLazyLoading;
   protected boolean multipleResultSetsEnabled = true;
   protected boolean useGeneratedKeys;
+  // 是否用as后的字段名
   protected boolean useColumnLabel = true;
   protected boolean cacheEnabled = true;
   protected boolean callSettersOnNulls;

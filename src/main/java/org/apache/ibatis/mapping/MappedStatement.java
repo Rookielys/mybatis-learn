@@ -44,6 +44,7 @@ public final class MappedStatement {
   // 表示是普通sql还是存储过程, 对应于jdbc的statement类型
   // 一般sql是PREPARED
   private StatementType statementType;
+  // jdbc的ResultSet类型
   private ResultSetType resultSetType;
   // sql语句相关，包括sql文本，参数等
   private SqlSource sqlSource;

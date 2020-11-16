@@ -54,11 +54,13 @@ public class ResultSetWrapper {
     super();
     this.typeHandlerRegistry = configuration.getTypeHandlerRegistry();
     this.resultSet = rs;
+    // 结果集包含的字段等信息
     final ResultSetMetaData metaData = rs.getMetaData();
     final int columnCount = metaData.getColumnCount();
     for (int i = 1; i <= columnCount; i++) {
       columnNames.add(configuration.isUseColumnLabel() ? metaData.getColumnLabel(i) : metaData.getColumnName(i));
       jdbcTypes.add(JdbcType.forCode(metaData.getColumnType(i)));
+      // 字段对应的Java类型
       classNames.add(metaData.getColumnClassName(i));
     }
   }
