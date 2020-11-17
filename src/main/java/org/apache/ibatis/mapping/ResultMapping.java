@@ -27,11 +27,14 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
  * @author Clinton Begin
+ * resultmap中result标签中的信息
  */
 public class ResultMapping {
 
   private Configuration configuration;
+  // 实体类属性名
   private String property;
+  // 数据库列名
   private String column;
   private Class<?> javaType;
   private JdbcType jdbcType;

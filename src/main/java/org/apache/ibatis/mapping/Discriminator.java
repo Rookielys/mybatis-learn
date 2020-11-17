@@ -24,8 +24,9 @@ import org.apache.ibatis.session.Configuration;
  * @author Clinton Begin
  */
 public class Discriminator {
-
+  // Discriminator中指定的字段的映射信息
   private ResultMapping resultMapping;
+  // 字段值和resultmap id 的映射关系
   private Map<String, String> discriminatorMap;
 
   Discriminator() {
