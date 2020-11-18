@@ -411,9 +411,10 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     if (rowValue != null && !hasTypeHandlerForResultObject(rsw, resultMap.getType())) {
       final MetaObject metaObject = configuration.newMetaObject(rowValue);
       boolean foundValues = this.useConstructorMappings;
-      if (shouldApplyAutomaticMappings(resultMap, false)) {
+      if (shouldApplyAutomaticMappings(resultMap, false)) { // 自动映射填充实体类的值
         foundValues = applyAutomaticMappings(rsw, resultMap, metaObject, columnPrefix) || foundValues;
       }
+      // 根据resultmap的映射填充字段值
       foundValues = applyPropertyMappings(rsw, resultMap, metaObject, lazyLoader, columnPrefix) || foundValues;
       foundValues = lazyLoader.size() > 0 || foundValues;
       rowValue = foundValues || configuration.isReturnInstanceForEmptyRow() ? rowValue : null;
@@ -640,8 +641,10 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     this.useConstructorMappings = false; // reset previous mapping result
     final List<Class<?>> constructorArgTypes = new ArrayList<>();
     final List<Object> constructorArgs = new ArrayList<>();
+    // 如果是通过自定义构造器创建对象，属性值已经被填充，否则没有填充
     Object resultObject = createResultObject(rsw, resultMap, constructorArgTypes, constructorArgs, columnPrefix);
     if (resultObject != null && !hasTypeHandlerForResultObject(rsw, resultMap.getType())) {
+      // 创建延迟加载的属性
       final List<ResultMapping> propertyMappings = resultMap.getPropertyResultMappings();
       for (ResultMapping propertyMapping : propertyMappings) {
         // issue gcode #109 && issue #149
@@ -664,11 +667,11 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     if (hasTypeHandlerForResultObject(rsw, resultType)) {
       //简单类型直接使用type handler来处理
       return createPrimitiveResultObject(rsw, resultMap, columnPrefix);
-    } else if (!constructorMappings.isEmpty()) {
+    } else if (!constructorMappings.isEmpty()) { // 通过自定义的构造函数
       return createParameterizedResultObject(rsw, resultType, constructorMappings, constructorArgTypes, constructorArgs, columnPrefix);
-    } else if (resultType.isInterface() || metaType.hasDefaultConstructor()) {
+    } else if (resultType.isInterface() || metaType.hasDefaultConstructor()) { // 通过默认构造函数
       return objectFactory.create(resultType);
-    } else if (shouldApplyAutomaticMappings(resultMap, false)) {
+    } else if (shouldApplyAutomaticMappings(resultMap, false)) { // auto mapping功能
       return createByConstructorSignature(rsw, resultType, constructorArgTypes, constructorArgs);
     }
     throw new ExecutorException("Do not know how to create an instance of " + resultType);
@@ -683,7 +686,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
       final String column = constructorMapping.getColumn();
       final Object value;
       try {
-        if (constructorMapping.getNestedQueryId() != null) { // 懒加载？
+        if (constructorMapping.getNestedQueryId() != null) { // 嵌套sql，直接查出结果
           value = getNestedQueryConstructorValue(rsw.getResultSet(), constructorMapping, columnPrefix);
         } else if (constructorMapping.getNestedResultMapId() != null) { // 内嵌resultmap
           final ResultMap resultMap = configuration.getResultMap(constructorMapping.getNestedResultMapId());
@@ -781,6 +784,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     final String nestedQueryId = constructorMapping.getNestedQueryId();
     final MappedStatement nestedQuery = configuration.getMappedStatement(nestedQueryId);
     final Class<?> nestedQueryParameterType = nestedQuery.getParameterMap().getType();
+    // 构建嵌套查询的参数对象
     final Object nestedQueryParameterObject = prepareParameterForNestedQuery(rs, constructorMapping, nestedQueryParameterType, columnPrefix);
     Object value = null;
     if (nestedQueryParameterObject != null) {
@@ -788,6 +792,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
       final CacheKey key = executor.createCacheKey(nestedQuery, nestedQueryParameterObject, RowBounds.DEFAULT, nestedBoundSql);
       final Class<?> targetType = constructorMapping.getJavaType();
       final ResultLoader resultLoader = new ResultLoader(configuration, executor, nestedQuery, nestedQueryParameterObject, targetType, key, nestedBoundSql);
+      // 嵌套查询
       value = resultLoader.loadResult();
     }
     return value;
