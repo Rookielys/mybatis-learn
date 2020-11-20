@@ -43,11 +43,17 @@ public class ResultSetWrapper {
 
   private final ResultSet resultSet;
   private final TypeHandlerRegistry typeHandlerRegistry;
+  // resultset中所有字段名(未进行大小写转换)
   private final List<String> columnNames = new ArrayList<>();
+  // java类型类名
   private final List<String> classNames = new ArrayList<>();
+  // jdbc类型
   private final List<JdbcType> jdbcTypes = new ArrayList<>();
+  // 字段名，java类，类型处理器
   private final Map<String, Map<Class<?>, TypeHandler<?>>> typeHandlerMap = new HashMap<>();
+  // 根据resultmap.id和字段前缀生成的key，在resultmap中配置了的字段名（大写）
   private final Map<String, List<String>> mappedColumnNamesMap = new HashMap<>();
+  // 未在resultmap中配置了的字段名（大写）
   private final Map<String, List<String>> unMappedColumnNamesMap = new HashMap<>();
 
   public ResultSetWrapper(ResultSet rs, Configuration configuration) throws SQLException {
@@ -60,7 +66,7 @@ public class ResultSetWrapper {
     for (int i = 1; i <= columnCount; i++) {
       columnNames.add(configuration.isUseColumnLabel() ? metaData.getColumnLabel(i) : metaData.getColumnName(i));
       jdbcTypes.add(JdbcType.forCode(metaData.getColumnType(i)));
-      // 字段对应的Java类型
+      // 字段对应的Java类型，jdbctype和javatype的映射时驱动做的而不是mybatis
       classNames.add(metaData.getColumnClassName(i));
     }
   }
@@ -101,6 +107,7 @@ public class ResultSetWrapper {
    *          the column name
    * @return the type handler
    */
+  // 查找的时候顺便放入
   public TypeHandler<?> getTypeHandler(Class<?> propertyType, String columnName) {
     TypeHandler<?> handler = null;
     Map<Class<?>, TypeHandler<?>> columnHandlers = typeHandlerMap.get(columnName);
@@ -150,8 +157,10 @@ public class ResultSetWrapper {
     List<String> mappedColumnNames = new ArrayList<>();
     List<String> unmappedColumnNames = new ArrayList<>();
     final String upperColumnPrefix = columnPrefix == null ? null : columnPrefix.toUpperCase(Locale.ENGLISH);
+    // prefix+column
     final Set<String> mappedColumns = prependPrefixes(resultMap.getMappedColumns(), upperColumnPrefix);
     for (String columnName : columnNames) {
+      // 数据库字段名转为大写
       final String upperColumnName = columnName.toUpperCase(Locale.ENGLISH);
       if (mappedColumns.contains(upperColumnName)) {
         mappedColumnNames.add(upperColumnName);

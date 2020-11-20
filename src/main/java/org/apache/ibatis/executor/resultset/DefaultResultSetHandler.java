@@ -181,6 +181,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   public List<Object> handleResultSets(Statement stmt) throws SQLException {
     ErrorContext.instance().activity("handling results").object(mappedStatement.getId());
 
+    //所有结果集的结果
     final List<Object> multipleResults = new ArrayList<>();
 
     int resultSetCount = 0;
@@ -196,7 +197,9 @@ public class DefaultResultSetHandler implements ResultSetHandler {
       ResultMap resultMap = resultMaps.get(resultSetCount);
       // 开始处理字段映射
       handleResultSet(rsw, resultMap, multipleResults, null);
+      // 如果驱动支持多结果集，获取下一结果集
       rsw = getNextResultSet(stmt);
+      // 清空嵌套查询结果
       cleanUpAfterHandlingResultSet();
       resultSetCount++;
     }
@@ -260,6 +263,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     try {
       if (stmt.getConnection().getMetaData().supportsMultipleResultSets()) {
         // Crazy Standard JDBC way of determining if there are more results
+        // !stmt.getMoreResults() && stmt.getUpdateCount() == -1,顺序不能变 确保没有没有结果了
         if (!(!stmt.getMoreResults() && stmt.getUpdateCount() == -1)) {
           ResultSet rs = stmt.getResultSet();
           if (rs == null) {
@@ -361,9 +365,10 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     // 循环到rowbounds指定的边界处
     while (shouldProcessMoreRows(resultContext, rowBounds) && !resultSet.isClosed() && resultSet.next()) {
       // ResultMap中的discriminator标签，功能是根据某个字段的不同值来使用不同的resultmap或resulttype
-      // 解析出要使用的resultmap或resulttype
+      // 解析出要使用的resultmap
       ResultMap discriminatedResultMap = resolveDiscriminatedResultMap(resultSet, resultMap, null);
       Object rowValue = getRowValue(rsw, discriminatedResultMap, null);
+      // 将每行的值解析出来的实体类放入resultHandler
       storeObject(resultHandler, resultContext, rowValue, parentMapping, resultSet);
     }
   }
@@ -881,6 +886,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     while (discriminator != null) {
       // 获取discriminator标签中配置的列的值
       final Object value = getDiscriminatorValue(rs, discriminator, columnPrefix);
+      // 转为字符串
       final String discriminatedMapId = discriminator.getMapIdFor(String.valueOf(value));
       if (configuration.hasResultMap(discriminatedMapId)) {
         // 解析到的resultmap中有可能又有discriminator，因此要循环解析，一直找到最终的resultmap
