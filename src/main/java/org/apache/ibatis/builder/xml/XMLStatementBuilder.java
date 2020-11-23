@@ -53,10 +53,12 @@ public class XMLStatementBuilder extends BaseBuilder {
     this.requiredDatabaseId = databaseId;
   }
 
+  // 解析sql语句标签
   public void parseStatementNode() {
     String id = context.getStringAttribute("id");
     String databaseId = context.getStringAttribute("databaseId");
-
+    // databaseid核心的控制逻辑在这里
+    // 如果存在配置了databaseid的SQL，返回false，如果没有databaseid，就用当前覆盖同id的sql
     if (!databaseIdMatchesCurrent(id, databaseId, this.requiredDatabaseId)) {
       return;
     }
@@ -65,8 +67,11 @@ public class XMLStatementBuilder extends BaseBuilder {
     // sql语句的类型
     SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
     boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
+    // 如果没有配置，select语句不刷新缓存，其它语句刷新缓存
     boolean flushCache = context.getBooleanAttribute("flushCache", !isSelect);
+    // 如果没有配置，select语句使用缓存，其它语句不使用缓存
     boolean useCache = context.getBooleanAttribute("useCache", isSelect);
+    // 不常用
     boolean resultOrdered = context.getBooleanAttribute("resultOrdered", false);
 
     // 引用的sql片段
@@ -77,6 +82,7 @@ public class XMLStatementBuilder extends BaseBuilder {
     String parameterType = context.getStringAttribute("parameterType");
     Class<?> parameterTypeClass = resolveClass(parameterType);
 
+    // 动态SQL的实现方式，一般是xml
     String lang = context.getStringAttribute("lang");
     LanguageDriver langDriver = getLanguageDriver(lang);
 
@@ -180,14 +186,18 @@ public class XMLStatementBuilder extends BaseBuilder {
     if (requiredDatabaseId != null) {
       return requiredDatabaseId.equals(databaseId);
     }
+    // requiredDatabaseId == null
     if (databaseId != null) {
       return false;
     }
+    // namespace + id
     id = builderAssistant.applyCurrentNamespace(id, false);
+    // 如果还没解析过这个id的sql就返回true
     if (!this.configuration.hasStatement(id, false)) {
       return true;
     }
     // skip this statement if there is a previous one with a not null databaseId
+    // 如果已存在这个id的sql，如果这个sql配置了databaseid就丢弃当前的，否则返回true
     MappedStatement previous = this.configuration.getMappedStatement(id, false); // issue #2
     return previous.getDatabaseId() == null;
   }

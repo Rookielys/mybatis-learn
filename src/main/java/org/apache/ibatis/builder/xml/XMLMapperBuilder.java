@@ -131,9 +131,15 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   private void buildStatementFromContext(List<XNode> list) {
+    // 注意
+    // 这里解析了两次SQL语句
+    // MyBatis 会加载带有匹配当前数据库 databaseId 属性和所有不带 databaseId 属性的语句。
+    // 如果同时找到带有 databaseId 和不带 databaseId 的相同语句，则后者会被舍弃
     if (configuration.getDatabaseId() != null) {
+      // 配置了databaseid
       buildStatementFromContext(list, configuration.getDatabaseId());
     }
+    // 没有配置databaseid
     buildStatementFromContext(list, null);
   }
 
