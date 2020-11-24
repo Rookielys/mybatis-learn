@@ -38,13 +38,14 @@ public class ResultMap {
   private Configuration configuration;
 
   private String id;
+  // 实体类
   private Class<?> type;
   private List<ResultMapping> resultMappings;
   private List<ResultMapping> idResultMappings;
   private List<ResultMapping> constructorResultMappings;
   private List<ResultMapping> propertyResultMappings;
-  private Set<String> mappedColumns;
-  private Set<String> mappedProperties;
+  private Set<String> mappedColumns; // 所有映射的字段
+  private Set<String> mappedProperties; // 所有映射的属性
   private Discriminator discriminator;
   private boolean hasNestedResultMaps;
   private boolean hasNestedQueries;

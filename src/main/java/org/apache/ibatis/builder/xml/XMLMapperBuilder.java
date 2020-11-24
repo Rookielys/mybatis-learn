@@ -150,6 +150,7 @@ public class XMLMapperBuilder extends BaseBuilder {
       try {
         statementParser.parseStatementNode();
       } catch (IncompleteElementException e) {
+        // 未解析完的
         configuration.addIncompleteStatement(statementParser);
       }
     }

@@ -270,6 +270,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
       throw new IncompleteElementException("Cache-ref not yet resolved");
     }
 
+    // namespace+id
     id = applyCurrentNamespace(id, false);
     boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
 
@@ -285,12 +286,13 @@ public class MapperBuilderAssistant extends BaseBuilder {
         .lang(lang)
         .resultOrdered(resultOrdered)
         .resultSets(resultSets)
-        .resultMaps(getStatementResultMaps(resultMap, resultType, id))
+        .resultMaps(getStatementResultMaps(resultMap, resultType, id))//多个
         .resultSetType(resultSetType)
         .flushCacheRequired(valueOrDefault(flushCache, !isSelect))
         .useCache(valueOrDefault(useCache, isSelect))
         .cache(currentCache);
-
+    // 类似于result map ，用于传参
+    // parameterType转为空parameterMap
     ParameterMap statementParameterMap = getStatementParameterMap(parameterMap, parameterType, id);
     if (statementParameterMap != null) {
       statementBuilder.parameterMap(statementParameterMap);
@@ -399,10 +401,10 @@ public class MapperBuilderAssistant extends BaseBuilder {
           throw new IncompleteElementException("Could not find result map '" + resultMapName + "' referenced from '" + statementId + "'", e);
         }
       }
-    } else if (resultType != null) {
+    } else if (resultType != null) {// 将result type转为result map,只是一个空的result map，只有实体类的类型
       ResultMap inlineResultMap = new ResultMap.Builder(
           configuration,
-          statementId + "-Inline",
+          statementId + "-Inline", // sql语句全名-Inline
           resultType,
           new ArrayList<>(),
           null).build();

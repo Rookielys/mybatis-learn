@@ -105,17 +105,22 @@ public class XMLStatementBuilder extends BaseBuilder {
     StatementType statementType = StatementType.valueOf(context.getStringAttribute("statementType", StatementType.PREPARED.toString()));
     Integer fetchSize = context.getIntAttribute("fetchSize");
     Integer timeout = context.getIntAttribute("timeout");
+    // 不常用
     String parameterMap = context.getStringAttribute("parameterMap");
     String resultType = context.getStringAttribute("resultType");
     Class<?> resultTypeClass = resolveClass(resultType);
     String resultMap = context.getStringAttribute("resultMap");
     String resultSetType = context.getStringAttribute("resultSetType");
+    // jdbc  的 resultset类型
     ResultSetType resultSetTypeEnum = resolveResultSetType(resultSetType);
     if (resultSetTypeEnum == null) {
       resultSetTypeEnum = configuration.getDefaultResultSetType();
     }
+    // 和useGeneratedKeys一起，用来设置主键的
+    // 仅用于insert update
     String keyProperty = context.getStringAttribute("keyProperty");
     String keyColumn = context.getStringAttribute("keyColumn");
+    // 用于多结果集
     String resultSets = context.getStringAttribute("resultSets");
 
     builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType,

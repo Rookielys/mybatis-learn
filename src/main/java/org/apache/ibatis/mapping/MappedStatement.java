@@ -50,8 +50,9 @@ public final class MappedStatement {
   private SqlSource sqlSource;
   // 一级缓存，作用域是同一个mapper文件
   private Cache cache;
-  // 一般不用
+  // parametertype转为了空的parameterMap
   private ParameterMap parameterMap;
+  // resulttype 转为了空的ResultMap
   private List<ResultMap> resultMaps;
   private boolean flushCacheRequired;
   private boolean useCache;
@@ -204,7 +205,7 @@ public final class MappedStatement {
       assert mappedStatement.id != null;
       assert mappedStatement.sqlSource != null;
       assert mappedStatement.lang != null;
-      mappedStatement.resultMaps = Collections.unmodifiableList(mappedStatement.resultMaps);
+      mappedStatement.resultMaps = Collections.unmodifiableList(mappedStatement.resultMaps);//转为不可修改的list
       return mappedStatement;
     }
   }
