@@ -43,7 +43,7 @@ public class ResultMapping {
   private String nestedQueryId;
   private Set<String> notNullColumns;
   private String columnPrefix;
-  // 是否用构造器
+  // 是否是构造器中的映射, 以及是否是id字段
   private List<ResultFlag> flags;
   private List<ResultMapping> composites;
   private String resultSet;
@@ -140,7 +140,9 @@ public class ResultMapping {
       // lock down collections
       resultMapping.flags = Collections.unmodifiableList(resultMapping.flags);
       resultMapping.composites = Collections.unmodifiableList(resultMapping.composites);
+      // 如果没有确定typehandler，就重新获取
       resolveTypeHandler();
+      // 做一些参数的校验
       validate();
       return resultMapping;
     }

@@ -271,19 +271,22 @@ public class XMLMapperBuilder extends BaseBuilder {
   // 解析resultMap
   private ResultMap resultMapElement(XNode resultMapNode, List<ResultMapping> additionalResultMappings, Class<?> enclosingType) {
     ErrorContext.instance().activity("processing " + resultMapNode.getValueBasedIdentifier());
+    // result map 标签上不能配ofType等属性吧
     String type = resultMapNode.getStringAttribute("type",
         resultMapNode.getStringAttribute("ofType",
             resultMapNode.getStringAttribute("resultType",
                 resultMapNode.getStringAttribute("javaType"))));
     Class<?> typeClass = resolveClass(type);
-    if (typeClass == null) {
+    if (typeClass == null) {//不解
       typeClass = inheritEnclosingType(resultMapNode, enclosingType);
     }
     Discriminator discriminator = null;
     // ResultMapping表示每个字段的映射情况
     List<ResultMapping> resultMappings = new ArrayList<>(additionalResultMappings);
     List<XNode> resultChildren = resultMapNode.getChildren();
+    // 遍历子节点
     for (XNode resultChild : resultChildren) {
+      // 构造器映射
       if ("constructor".equals(resultChild.getName())) {
         processConstructorElement(resultChild, typeClass, resultMappings);
       } else if ("discriminator".equals(resultChild.getName())) {
@@ -388,7 +391,10 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private ResultMapping buildResultMappingFromContext(XNode context, Class<?> resultType, List<ResultFlag> flags) {
     String property;
+    // 构造器映射类的属性名是name，而一般映射属性名是property
+    // 获取属性名
     if (flags.contains(ResultFlag.CONSTRUCTOR)) {
+      // 构造器使用name入参，可以忽略参数的顺序
       property = context.getStringAttribute("name");
     } else {
       property = context.getStringAttribute("property");

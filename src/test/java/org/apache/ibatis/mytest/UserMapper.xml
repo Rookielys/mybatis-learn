@@ -4,7 +4,16 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.apache.ibatis.mytest.UserMapper">
   <cache/>
-  <select id="selectUserById" resultType="org.apache.ibatis.mytest.User" parameterType="int">
+
+  <resultMap id="haha" type="org.apache.ibatis.mytest.User">
+<!--    <id column="id" property="id"/>-->
+<!--    <result column="name" property="name"/>-->
+    <constructor>
+      <idArg column="id" name="id"/>
+      <arg column="name" name="name"/>
+    </constructor>
+  </resultMap>
+  <select id="selectUserById" parameterType="int" resultMap="haha">
     select * from myuser where id = #{id}
   </select>
 

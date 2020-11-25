@@ -428,9 +428,10 @@ public class MapperBuilderAssistant extends BaseBuilder {
       String resultSet,
       String foreignColumn,
       boolean lazy) {
-    // 确定这个字段的Java type，优先使用配置的javaType
+    // 确定这个字段的Java type
+    // 如果没有配置就从配置的实体类中根据属性名来获取javatype
     Class<?> javaTypeClass = resolveResultJavaType(resultType, property, javaType);
-    // 没有配置typehandler最终返回null？
+    // 根据配置的typeHandler去注册处获取typeHandler，如果没有配置根据字段的java类型获取
     TypeHandler<?> typeHandlerInstance = resolveTypeHandler(javaTypeClass, typeHandler);
     List<ResultMapping> composites;
     if ((nestedSelect == null || nestedSelect.isEmpty()) && (foreignColumn == null || foreignColumn.isEmpty())) {
