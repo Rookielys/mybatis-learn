@@ -431,12 +431,13 @@ public class MapperBuilderAssistant extends BaseBuilder {
     // 确定这个字段的Java type
     // 如果没有配置就从配置的实体类中根据属性名来获取javatype
     Class<?> javaTypeClass = resolveResultJavaType(resultType, property, javaType);
-    // 根据配置的typeHandler去注册处获取typeHandler，如果没有配置根据字段的java类型获取
+    // 根据配置的typeHandler去注册处获取typeHandler，如果没有配置直接创建typeHandler
     TypeHandler<?> typeHandlerInstance = resolveTypeHandler(javaTypeClass, typeHandler);
     List<ResultMapping> composites;
     if ((nestedSelect == null || nestedSelect.isEmpty()) && (foreignColumn == null || foreignColumn.isEmpty())) {
       composites = Collections.emptyList();
     } else {
+      // 内嵌sql的映射
       composites = parseCompositeColumnName(column);
     }
     return new ResultMapping.Builder(configuration, property, column, javaTypeClass)

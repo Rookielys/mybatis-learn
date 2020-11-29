@@ -6,13 +6,19 @@
   <cache/>
 
   <resultMap id="haha" type="org.apache.ibatis.mytest.User">
-<!--    <id column="id" property="id"/>-->
-<!--    <result column="name" property="name"/>-->
-    <constructor>
-      <idArg column="id" name="id"/>
-      <arg column="name" name="name"/>
-    </constructor>
+    <id column="id" property="id"/>
+    <result column="name" property="name"/>
+    <association property="info" javaType="org.apache.ibatis.mytest.Info">
+      <result column="age" property="age"/>
+      <result column="email" property="email"/>
+    </association>
   </resultMap>
+
+<!--  <resultMap id="lala" type="org.apache.ibatis.mytest.User">-->
+<!--    <discriminator javaType="int" column="id">-->
+<!--      <case value="1" resultMap="haha"/>-->
+<!--    </discriminator>-->
+<!--  </resultMap>-->
   <select id="selectUserById" parameterType="int" resultMap="haha">
     select * from myuser where id = #{id}
   </select>

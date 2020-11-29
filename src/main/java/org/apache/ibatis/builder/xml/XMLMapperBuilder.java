@@ -268,16 +268,16 @@ public class XMLMapperBuilder extends BaseBuilder {
     return resultMapElement(resultMapNode, Collections.emptyList(), null);
   }
 
-  // 解析resultMap
+  // 解析resultMap标签以及解析"association", "collection", "case"等标签上的resultmap
   private ResultMap resultMapElement(XNode resultMapNode, List<ResultMapping> additionalResultMappings, Class<?> enclosingType) {
     ErrorContext.instance().activity("processing " + resultMapNode.getValueBasedIdentifier());
-    // result map 标签上不能配ofType等属性吧
+    // collection 等标签上配置的resultmap
     String type = resultMapNode.getStringAttribute("type",
         resultMapNode.getStringAttribute("ofType",
             resultMapNode.getStringAttribute("resultType",
                 resultMapNode.getStringAttribute("javaType"))));
     Class<?> typeClass = resolveClass(type);
-    if (typeClass == null) {//不解
+    if (typeClass == null) {// association等标签如果没有配置类型，就是用映射的字段的类型
       typeClass = inheritEnclosingType(resultMapNode, enclosingType);
     }
     Discriminator discriminator = null;
@@ -291,7 +291,7 @@ public class XMLMapperBuilder extends BaseBuilder {
         processConstructorElement(resultChild, typeClass, resultMappings);
       } else if ("discriminator".equals(resultChild.getName())) {
         discriminator = processDiscriminatorElement(resultChild, typeClass, resultMappings);
-      } else {
+      } else {//普通映射以及"association", "collection"
         List<ResultFlag> flags = new ArrayList<>();
         if ("id".equals(resultChild.getName())) {
           flags.add(ResultFlag.ID);
@@ -329,8 +329,10 @@ public class XMLMapperBuilder extends BaseBuilder {
     List<XNode> argChildren = resultChild.getChildren();
     for (XNode argChild : argChildren) {
       List<ResultFlag> flags = new ArrayList<>();
+      // 表示这个字段是构造函数中的
       flags.add(ResultFlag.CONSTRUCTOR);
       if ("idArg".equals(argChild.getName())) {
+        // 表示是id字段
         flags.add(ResultFlag.ID);
       }
       resultMappings.add(buildResultMappingFromContext(argChild, resultType, flags));
@@ -389,6 +391,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     return context.getStringAttribute("databaseId") == null;
   }
 
+  // 构建resultmapping，包括从构造器和一般的setter/getter，通用方法
   private ResultMapping buildResultMappingFromContext(XNode context, Class<?> resultType, List<ResultFlag> flags) {
     String property;
     // 构造器映射类的属性名是name，而一般映射属性名是property
@@ -403,6 +406,7 @@ public class XMLMapperBuilder extends BaseBuilder {
     String javaType = context.getStringAttribute("javaType");
     String jdbcType = context.getStringAttribute("jdbcType");
     String nestedSelect = context.getStringAttribute("select");
+    // 解析"association", "collection"
     String nestedResultMap = context.getStringAttribute("resultMap", () ->
         processNestedResultMappings(context, Collections.emptyList(), resultType));
     String notNullColumn = context.getStringAttribute("notNullColumn");
@@ -417,9 +421,11 @@ public class XMLMapperBuilder extends BaseBuilder {
     return builderAssistant.buildResultMapping(resultType, property, column, javaTypeClass, jdbcTypeEnum, nestedSelect, nestedResultMap, notNullColumn, columnPrefix, typeHandlerClass, flags, resultSet, foreignColumn, lazy);
   }
 
+  // 解析"association", "collection", "case"等标签上的resultmap
   private String processNestedResultMappings(XNode context, List<ResultMapping> resultMappings, Class<?> enclosingType) {
     if (Arrays.asList("association", "collection", "case").contains(context.getName())
         && context.getStringAttribute("select") == null) {
+      // 校验实体类上是否有标签上配置的属性
       validateCollection(context, enclosingType);
       ResultMap resultMap = resultMapElement(context, resultMappings, enclosingType);
       return resultMap.getId();
