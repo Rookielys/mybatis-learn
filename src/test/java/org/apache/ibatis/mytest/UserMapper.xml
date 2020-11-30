@@ -5,6 +5,11 @@
 <mapper namespace="org.apache.ibatis.mytest.UserMapper">
   <cache/>
 
+<!--  <resultMap id="lala" type="org.apache.ibatis.mytest.User">-->
+<!--    <discriminator javaType="int" column="id">-->
+<!--      <case value="1" resultMap="haha"/>-->
+<!--    </discriminator>-->
+<!--  </resultMap>-->
   <resultMap id="haha" type="org.apache.ibatis.mytest.User">
     <id column="id" property="id"/>
     <result column="name" property="name"/>
@@ -12,13 +17,14 @@
       <result column="age" property="age"/>
       <result column="email" property="email"/>
     </association>
+<!--    <association property="info" resultMap="lala"/>-->
   </resultMap>
 
-<!--  <resultMap id="lala" type="org.apache.ibatis.mytest.User">-->
-<!--    <discriminator javaType="int" column="id">-->
-<!--      <case value="1" resultMap="haha"/>-->
-<!--    </discriminator>-->
-<!--  </resultMap>-->
+  <resultMap id="lala" type="org.apache.ibatis.mytest.Info">
+    <result property="email" column="email"/>
+    <result property="age" column="age"/>
+  </resultMap>
+
   <select id="selectUserById" parameterType="int" resultMap="haha">
     select * from myuser where id = #{id}
   </select>

@@ -276,6 +276,7 @@ public class XMLMapperBuilder extends BaseBuilder {
         resultMapNode.getStringAttribute("ofType",
             resultMapNode.getStringAttribute("resultType",
                 resultMapNode.getStringAttribute("javaType"))));
+    // 先在别名注册器中找，找不到就直接根据类名加载
     Class<?> typeClass = resolveClass(type);
     if (typeClass == null) {// association等标签如果没有配置类型，就是用映射的字段的类型
       typeClass = inheritEnclosingType(resultMapNode, enclosingType);
