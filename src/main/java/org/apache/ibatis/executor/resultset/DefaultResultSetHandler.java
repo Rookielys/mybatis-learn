@@ -331,11 +331,11 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   //
 
   public void handleRowValues(ResultSetWrapper rsw, ResultMap resultMap, ResultHandler<?> resultHandler, RowBounds rowBounds, ResultMapping parentMapping) throws SQLException {
-    if (resultMap.hasNestedResultMaps()) { // 先不管
+    if (resultMap.hasNestedResultMaps()) { // 有嵌套结果
       ensureNoRowBounds();
       checkResultHandler();
       handleRowValuesForNestedResultMap(rsw, resultMap, resultHandler, rowBounds, parentMapping);
-    } else {
+    } else { // 没有嵌套结果
       handleRowValuesForSimpleResultMap(rsw, resultMap, resultHandler, rowBounds, parentMapping);
     }
   }

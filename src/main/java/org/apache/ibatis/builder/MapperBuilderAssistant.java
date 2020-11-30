@@ -437,7 +437,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
     if ((nestedSelect == null || nestedSelect.isEmpty()) && (foreignColumn == null || foreignColumn.isEmpty())) {
       composites = Collections.emptyList();
     } else {
-      // 内嵌sql的映射
+      // 内嵌sql时的复杂外键，暂时不知道咋用
       composites = parseCompositeColumnName(column);
     }
     return new ResultMapping.Builder(configuration, property, column, javaTypeClass)

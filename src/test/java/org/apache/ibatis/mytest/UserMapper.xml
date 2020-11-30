@@ -8,19 +8,20 @@
   <resultMap id="haha" type="org.apache.ibatis.mytest.User">
     <id column="id" property="id"/>
     <result column="name" property="name"/>
-    <association property="info" javaType="org.apache.ibatis.mytest.Info">
-      <result column="age" property="age"/>
-      <result column="email" property="email"/>
-    </association>
+    <association property="info" resultMap="lala"/>
   </resultMap>
 
-<!--  <resultMap id="lala" type="org.apache.ibatis.mytest.User">-->
-<!--    <discriminator javaType="int" column="id">-->
-<!--      <case value="1" resultMap="haha"/>-->
-<!--    </discriminator>-->
-<!--  </resultMap>-->
+  <resultMap id="lala" type="org.apache.ibatis.mytest.Info">
+    <result column="age" property="age"/>
+    <result column="email" property="email"/>
+  </resultMap>
+
   <select id="selectUserById" parameterType="int" resultMap="haha">
-    select * from myuser where id = #{id}
+    select * from myuser left join userinfo on id = user_id where id = #{id}
+  </select>
+
+  <select id="selectInfo" parameterType="int" resultMap="lala">
+    select * from userinfo where user_id = #{id}
   </select>
 
   <update id="updateUser" parameterType="int">
