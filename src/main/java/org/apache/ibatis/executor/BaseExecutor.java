@@ -198,7 +198,7 @@ public abstract class BaseExecutor implements Executor {
       throw new ExecutorException("Executor was closed.");
     }
     DeferredLoad deferredLoad = new DeferredLoad(resultObject, property, key, localCache, configuration, targetType);
-    if (deferredLoad.canLoad()) {
+    if (deferredLoad.canLoad()) { // 如果在缓存里，直接赋值
       deferredLoad.load();
     } else {
       deferredLoads.add(new DeferredLoad(resultObject, property, key, localCache, configuration, targetType));

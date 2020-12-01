@@ -392,6 +392,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
     resultMap = applyCurrentNamespace(resultMap, true);
 
     List<ResultMap> resultMaps = new ArrayList<>();
+    // 由逗号隔开可以配置多个resultmap？
     if (resultMap != null) {
       String[] resultMapNames = resultMap.split(",");
       for (String resultMapName : resultMapNames) {
