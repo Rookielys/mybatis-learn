@@ -449,6 +449,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         if (shouldApplyAutomaticMappings(resultMap, true)) {
           foundValues = applyAutomaticMappings(rsw, resultMap, metaObject, columnPrefix) || foundValues;
         }
+        // 先将不带嵌套resultmap的列的值填充完
         foundValues = applyPropertyMappings(rsw, resultMap, metaObject, lazyLoader, columnPrefix) || foundValues;
         putAncestor(rowValue, resultMapId);
         foundValues = applyNestedResultMappings(rsw, resultMap, metaObject, columnPrefix, combinedKey, true) || foundValues;
@@ -496,6 +497,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         // the user added a column attribute to a nested result map, ignore it
         column = null;
       }
+      // 只处理不带嵌套resultmap的列
       if (propertyMapping.isCompositeResult()
           || (column != null && mappedColumnNames.contains(column.toUpperCase(Locale.ENGLISH)))//返回的字段里包含了配置的字段，才会填充值
           || propertyMapping.getResultSet() != null) {
@@ -935,6 +937,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     ResultSet resultSet = rsw.getResultSet();
     skipRows(resultSet, rowBounds);
     Object rowValue = previousRowValue;
+    // 开始处理每一行数据
     while (shouldProcessMoreRows(resultContext, rowBounds) && !resultSet.isClosed() && resultSet.next()) {
       final ResultMap discriminatedResultMap = resolveDiscriminatedResultMap(resultSet, resultMap, null);
       // 每行的key
@@ -992,7 +995,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
           boolean knownValue = rowValue != null;
           // 如果属性是collection且为null, 就实例话一个collection
           instantiateCollectionPropertyIfAppropriate(resultMapping, metaObject); // mandatory
-          if (anyNotNullColumnHasValue(resultMapping, columnPrefix, rsw)) { // 配置的notnullcolumn，不知其功能
+          if (anyNotNullColumnHasValue(resultMapping, columnPrefix, rsw)) { // 配置的notnullcolumn的字段的值都不为null,没配置恒为true
             rowValue = getRowValue(rsw, nestedResultMap, combinedKey, columnPrefix, rowValue);
             if (rowValue != null && !knownValue) {
               linkObjects(metaObject, resultMapping, rowValue);
@@ -1143,6 +1146,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   }
 
   private void linkObjects(MetaObject metaObject, ResultMapping resultMapping, Object rowValue) {
+    // 判断是否是collection类型，通过Javatype和oftype来判断
     final Object collectionProperty = instantiateCollectionPropertyIfAppropriate(resultMapping, metaObject);
     if (collectionProperty != null) {
       final MetaObject targetMetaObject = configuration.newMetaObject(collectionProperty);

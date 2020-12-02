@@ -5,6 +5,7 @@ import lombok.Data;
 import org.apache.ibatis.type.Alias;
 
 import java.io.Serializable;
+import java.util.List;
 
 // 二级缓存需要可序列化
 //@Alias("user")
@@ -13,7 +14,7 @@ import java.io.Serializable;
 public class User implements Serializable {
   private Integer id;
   private String name;
-  private Info info;
+  private List<Info> infos;
 
   public User() {}
 
@@ -38,11 +39,11 @@ public class User implements Serializable {
     this.name = name;
   }
 
-  public Info getInfo() {
-    return info;
+  public List<Info> getInfos() {
+    return infos;
   }
 
-  public void setInfo(Info info) {
-    this.info = info;
+  public void setInfos(List<Info> infos) {
+    this.infos = infos;
   }
 }
