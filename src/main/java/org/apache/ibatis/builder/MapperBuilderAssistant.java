@@ -392,6 +392,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
     resultMap = applyCurrentNamespace(resultMap, true);
 
     List<ResultMap> resultMaps = new ArrayList<>();
+    // 由逗号隔开可以配置多个resultmap？
     if (resultMap != null) {
       String[] resultMapNames = resultMap.split(",");
       for (String resultMapName : resultMapNames) {
@@ -437,7 +438,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
     if ((nestedSelect == null || nestedSelect.isEmpty()) && (foreignColumn == null || foreignColumn.isEmpty())) {
       composites = Collections.emptyList();
     } else {
-      // 内嵌sql的映射
+      // 内嵌sql时的复杂外键，暂时不知道咋用
       composites = parseCompositeColumnName(column);
     }
     return new ResultMapping.Builder(configuration, property, column, javaTypeClass)

@@ -26,7 +26,11 @@
   </resultMap>
 
   <select id="selectUserById" parameterType="int" resultMap="haha">
-    select * from myuser where id = #{id}
+    select * from myuser left join userinfo on id = user_id where id = #{id}
+  </select>
+
+  <select id="selectInfo" parameterType="int" resultMap="lala">
+    select * from userinfo where user_id = #{id}
   </select>
 
   <update id="updateUser" parameterType="int">

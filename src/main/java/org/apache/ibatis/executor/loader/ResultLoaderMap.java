@@ -49,6 +49,7 @@ public class ResultLoaderMap {
 
   private final Map<String, LoadPair> loaderMap = new HashMap<>();
 
+  // 属性，属性所属的对象，加载器（其实就是一个查询器）
   public void addLoader(String property, MetaObject metaResultObject, ResultLoader resultLoader) {
     String upperFirst = getUppercaseFirstProperty(property);
     if (!upperFirst.equalsIgnoreCase(property) && loaderMap.containsKey(upperFirst)) {

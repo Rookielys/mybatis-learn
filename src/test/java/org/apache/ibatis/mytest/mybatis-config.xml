@@ -8,6 +8,10 @@
   </properties>
   <settings>
     <setting name="cacheEnabled" value="true"/>
+    <!--开启延迟加载-->
+    <setting name="lazyLoadingEnabled" value="true"/>
+    <!--关闭积极加载-->
+    <setting name="aggressiveLazyLoading" value="false"/>
     <setting name="logImpl" value="STDOUT_LOGGING" />
   </settings>
   <typeAliases>
@@ -20,7 +24,7 @@
       <transactionManager type="JDBC"/>
       <dataSource type="POOLED">
         <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://127.0.0.1:3306/hello?useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false&amp;serverTimezone=UTC"/>
+        <property name="url" value="jdbc:mysql://172.18.133.250:3306/hello?useUnicode=true&amp;characterEncoding=utf8&amp;useSSL=false&amp;serverTimezone=UTC"/>
         <property name="username" value="root"/>
         <property name="password" value="123456"/>
       </dataSource>
