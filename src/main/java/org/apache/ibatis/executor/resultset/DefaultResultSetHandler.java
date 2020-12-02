@@ -440,7 +440,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
       putAncestor(rowValue, resultMapId);
       applyNestedResultMappings(rsw, resultMap, metaObject, columnPrefix, combinedKey, false);
       ancestorObjects.remove(resultMapId);
-    } else {
+    } else { // 即partialObject为空,就去创建一个外层的类
       final ResultLoaderMap lazyLoader = new ResultLoaderMap();
       rowValue = createResultObject(rsw, resultMap, lazyLoader, columnPrefix);
       if (rowValue != null && !hasTypeHandlerForResultObject(rsw, resultMap.getType())) {
@@ -451,6 +451,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         }
         // 先将不带嵌套resultmap的列的值填充完
         foundValues = applyPropertyMappings(rsw, resultMap, metaObject, lazyLoader, columnPrefix) || foundValues;
+        // 将上层对象和resultmap对应关系保存起来
         putAncestor(rowValue, resultMapId);
         foundValues = applyNestedResultMappings(rsw, resultMap, metaObject, columnPrefix, combinedKey, true) || foundValues;
         ancestorObjects.remove(resultMapId);
@@ -940,20 +941,23 @@ public class DefaultResultSetHandler implements ResultSetHandler {
     // 开始处理每一行数据
     while (shouldProcessMoreRows(resultContext, rowBounds) && !resultSet.isClosed() && resultSet.next()) {
       final ResultMap discriminatedResultMap = resolveDiscriminatedResultMap(resultSet, resultMap, null);
-      // 每行的key
+      // 重点
+      // 每行的key，作为识别相同行的依据，对应于mapper中配置的id（如果id没有配置，那就是所有的列构成一个组合id）
+      // key的生成算法里考虑了当前行的列名和值（不含嵌套的列，因为嵌套的属性无法对应一个单独的列）
+      // 因此通过这个key可以识不同行对应的同一个对象，因为存在嵌套对象时，某些行的某一部分肯定是相同的
       final CacheKey rowKey = createRowKey(discriminatedResultMap, rsw, null);
-      // nestedResultObjects 一对多，一为key，多为value
+      // nestedResultObjects，解析出来的结果对象，包括嵌套的对象
       Object partialObject = nestedResultObjects.get(rowKey);
       // issue #577 && #542
-      if (mappedStatement.isResultOrdered()) {
-        if (partialObject == null && rowValue != null) { // 开始了一个新的一，所以要把上一个一对应的多的数据清空
+      if (mappedStatement.isResultOrdered()) {// 配置了ResultOrder（前提是你的sql里有排序？），如果开始解析一个新的外层对象，就把上保存的上一个外层对象清空
+        if (partialObject == null && rowValue != null) {
           nestedResultObjects.clear();
           storeObject(resultHandler, resultContext, rowValue, parentMapping, resultSet);
         }
         rowValue = getRowValue(rsw, discriminatedResultMap, rowKey, null, partialObject);
       } else {
         rowValue = getRowValue(rsw, discriminatedResultMap, rowKey, null, partialObject);
-        if (partialObject == null) {
+        if (partialObject == null) { // 解析完某个外层对象的所有嵌套对象后
           storeObject(resultHandler, resultContext, rowValue, parentMapping, resultSet);
         }
       }
@@ -968,11 +972,13 @@ public class DefaultResultSetHandler implements ResultSetHandler {
 
   //
   // NESTED RESULT MAP (JOIN MAPPING)
+  // metaObject 上层对象
   //
 
   private boolean applyNestedResultMappings(ResultSetWrapper rsw, ResultMap resultMap, MetaObject metaObject, String parentPrefix, CacheKey parentRowKey, boolean newObject) {
     boolean foundValues = false;
     for (ResultMapping resultMapping : resultMap.getPropertyResultMappings()) {
+      // 嵌套的resultmap
       final String nestedResultMapId = resultMapping.getNestedResultMapId();
       if (nestedResultMapId != null && resultMapping.getResultSet() == null) {
         try {
@@ -993,7 +999,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
           final CacheKey combinedKey = combineKeys(rowKey, parentRowKey);
           Object rowValue = nestedResultObjects.get(combinedKey);
           boolean knownValue = rowValue != null;
-          // 如果属性是collection且为null, 就实例话一个collection
+          // 如果属性是collection且为null, 就实例化一个collection
           instantiateCollectionPropertyIfAppropriate(resultMapping, metaObject); // mandatory
           if (anyNotNullColumnHasValue(resultMapping, columnPrefix, rsw)) { // 配置的notnullcolumn的字段的值都不为null,没配置恒为true
             rowValue = getRowValue(rsw, nestedResultMap, combinedKey, columnPrefix, rowValue);

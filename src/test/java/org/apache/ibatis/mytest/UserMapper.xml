@@ -13,11 +13,17 @@
   <resultMap id="haha" type="org.apache.ibatis.mytest.User">
     <id column="id" property="id"/>
     <result column="name" property="name"/>
-    <collection property="infos" ofType="org.apache.ibatis.mytest.Info">
-      <result column="age" property="age"/>
-      <result column="email" property="email"/>
-    </collection>
-<!--    <association property="info" resultMap="lala"/>-->
+<!--    <collection property="infos" ofType="org.apache.ibatis.mytest.Info">-->
+<!--      <result column="age" property="age"/>-->
+<!--      <result column="email" property="email"/>-->
+<!--    </collection>-->
+<!--    这样写infos属性的类型是去自动获取，此时info是list也能正常运行-->
+    <association property="infos" resultMap="lala"/>
+    <!--  这样写Java type相当于即指定了infos属性的类型，又指定了生成的resultMap的type  -->
+<!--    <association property="infos" javaType="org.apache.ibatis.mytest.Info">-->
+<!--      <result property="email" column="email"/>-->
+<!--      <result property="age" column="age"/>-->
+<!--    </association>-->
   </resultMap>
 
   <resultMap id="lala" type="org.apache.ibatis.mytest.Info">
