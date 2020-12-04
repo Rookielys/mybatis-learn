@@ -29,6 +29,10 @@
     select * from myuser left join userinfo on id = user_id where id = #{id}
   </select>
 
+  <select id="selectUsers" resultMap="haha" resultOrdered="true">
+    select * from myuser left join userinfo on id = user_id order by id
+  </select>
+
   <select id="selectInfo" parameterType="int" resultMap="lala">
     select * from userinfo where user_id = #{id}
   </select>
