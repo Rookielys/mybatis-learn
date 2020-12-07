@@ -51,7 +51,7 @@ public class BuilderTest {
     SqlSession sqlSession2 = sqlSessionFactory.openSession();
 //    UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
 //    System.out.println(userMapper.selectUserById(1));
-    List<User> userList = sqlSession.selectList("org.apache.ibatis.mytest.UserMapper.selectUsers");
+    List<User> userList = sqlSession.selectList("org.apache.ibatis.mytest.UserMapper.selectUserById", 1);
     //System.out.println(userList.get(0).getInfo());;
     sqlSession.close();
 //    List<User> userList2 = sqlSession2.selectList("org.apache.ibatis.mytest.UserMapper.selectUserById", 1);
