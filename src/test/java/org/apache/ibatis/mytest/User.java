@@ -15,6 +15,7 @@ public class User implements Serializable {
   private Integer id;
   private String name;
   private List<Info> infos;
+  private Info info;
 
   public User() {}
 
@@ -45,5 +46,13 @@ public class User implements Serializable {
 
   public void setInfos(List<Info> infos) {
     this.infos = infos;
+  }
+
+  public Info getInfo() {
+    return info;
+  }
+
+  public void setInfo(Info info) {
+    this.info = info;
   }
 }

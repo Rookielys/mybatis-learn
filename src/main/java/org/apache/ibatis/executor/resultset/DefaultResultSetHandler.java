@@ -950,6 +950,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
         if (partialObject == null && rowValue != null) { // 开始了一个新的一，所以要把上一个一对应的多的数据清空
           nestedResultObjects.clear();
           // 在处理下一行之前，对上一个主对象执行下面的逻辑，这样会导致最后一个主对象不会执行下面的逻辑
+          // 循环结束后对最后一个主对象执行
           storeObject(resultHandler, resultContext, rowValue, parentMapping, resultSet);
         }
         rowValue = getRowValue(rsw, discriminatedResultMap, rowKey, null, partialObject);

@@ -13,7 +13,7 @@
   <resultMap id="haha" type="org.apache.ibatis.mytest.User">
     <id column="id" property="id"/>
     <result column="name" property="name"/>
-    <collection property="infos" ofType="org.apache.ibatis.mytest.Info">
+    <collection property="info" ofType="org.apache.ibatis.mytest.Info" javaType="org.apache.ibatis.mytest.Info">
       <result column="age" property="age"/>
       <result column="email" property="email"/>
     </collection>
