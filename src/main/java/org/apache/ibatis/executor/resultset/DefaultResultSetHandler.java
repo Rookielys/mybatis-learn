@@ -949,9 +949,12 @@ public class DefaultResultSetHandler implements ResultSetHandler {
       // nestedResultObjects，解析出来的结果对象，包括嵌套的对象
       Object partialObject = nestedResultObjects.get(rowKey);
       // issue #577 && #542
-      if (mappedStatement.isResultOrdered()) {// 配置了ResultOrder（前提是你的sql里有排序？），如果开始解析一个新的外层对象，就把上保存的上一个外层对象清空
-        if (partialObject == null && rowValue != null) {
+      if (mappedStatement.isResultOrdered()) {
+        // 注意这里的rowValue是上一行的数据
+        if (partialObject == null && rowValue != null) { // 开始了一个新的一，所以要把上一个一对应的多的数据清空
           nestedResultObjects.clear();
+          // 在处理下一行之前，对上一个主对象执行下面的逻辑，这样会导致最后一个主对象不会执行下面的逻辑
+          // 循环结束后对最后一个主对象执行
           storeObject(resultHandler, resultContext, rowValue, parentMapping, resultSet);
         }
         rowValue = getRowValue(rsw, discriminatedResultMap, rowKey, null, partialObject);
@@ -1152,7 +1155,7 @@ public class DefaultResultSetHandler implements ResultSetHandler {
   }
 
   private void linkObjects(MetaObject metaObject, ResultMapping resultMapping, Object rowValue) {
-    // 判断是否是collection类型，通过Javatype和oftype来判断
+    // 判断是否是collection类型，通过resultMapping的javatype或根据属性实际的类型
     final Object collectionProperty = instantiateCollectionPropertyIfAppropriate(resultMapping, metaObject);
     if (collectionProperty != null) {
       final MetaObject targetMetaObject = configuration.newMetaObject(collectionProperty);
