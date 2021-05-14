@@ -73,7 +73,8 @@ public class DefaultParameterHandler implements ParameterHandler {
             value = boundSql.getAdditionalParameter(propertyName);
           } else if (parameterObject == null) {
             value = null;
-          } else if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {//如果是简单类型就直接赋值
+          } else if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
+            // 如果参数类型能找到类型处理器，就把整个参数赋值给属性，是不是有问题？
             value = parameterObject;
           } else {//通过参数名获取值
             MetaObject metaObject = configuration.newMetaObject(parameterObject);

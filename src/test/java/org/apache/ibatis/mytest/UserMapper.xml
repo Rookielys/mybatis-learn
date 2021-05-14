@@ -5,25 +5,25 @@
 <mapper namespace="org.apache.ibatis.mytest.UserMapper">
   <cache/>
 
-<!--  <resultMap id="lala" type="org.apache.ibatis.mytest.User">-->
-<!--    <discriminator javaType="int" column="id">-->
-<!--      <case value="1" resultMap="haha"/>-->
-<!--    </discriminator>-->
-<!--  </resultMap>-->
+  <!--  <resultMap id="lala" type="org.apache.ibatis.mytest.User">-->
+  <!--    <discriminator javaType="int" column="id">-->
+  <!--      <case value="1" resultMap="haha"/>-->
+  <!--    </discriminator>-->
+  <!--  </resultMap>-->
   <resultMap id="haha" type="org.apache.ibatis.mytest.User">
     <id column="id" property="id"/>
     <result column="name" property="name"/>
-<!--    <collection property="infos" ofType="org.apache.ibatis.mytest.Info">-->
-<!--      <result column="age" property="age"/>-->
-<!--      <result column="email" property="email"/>-->
-<!--    </collection>-->
-<!--    这样写infos属性的类型是去自动获取，此时info是list也能正常运行-->
+    <!--    <collection property="infos" ofType="org.apache.ibatis.mytest.Info">-->
+    <!--      <result column="age" property="age"/>-->
+    <!--      <result column="email" property="email"/>-->
+    <!--    </collection>-->
+    <!--    这样写infos属性的类型是去自动获取，此时info是list也能正常运行-->
     <association property="infos" resultMap="lala"/>
     <!--  这样写Java type相当于即指定了infos属性的类型，又指定了生成的resultMap的type  -->
-<!--    <association property="infos" javaType="org.apache.ibatis.mytest.Info">-->
-<!--      <result property="email" column="email"/>-->
-<!--      <result property="age" column="age"/>-->
-<!--    </association>-->
+    <!--    <association property="infos" javaType="org.apache.ibatis.mytest.Info">-->
+    <!--      <result property="email" column="email"/>-->
+    <!--      <result property="age" column="age"/>-->
+    <!--    </association>-->
   </resultMap>
 
   <resultMap id="lala" type="org.apache.ibatis.mytest.Info">
@@ -31,20 +31,21 @@
     <result property="age" column="age"/>
   </resultMap>
 
-  <select id="selectUserById" parameterType="int" resultMap="haha">
-    select * from myuser left join userinfo on id = user_id
-    where id = #{id,jdbcType=VARCHAR}
-  </select>
-
-  <select id="selectUsers" resultMap="haha" resultOrdered="true">
-    select * from myuser left join userinfo on id = user_id order by id
-  </select>
-
-  <select id="selectInfo" parameterType="int" resultMap="lala">
-    select * from userinfo where user_id = #{id}
+  <select id="selectUserById" parameterType="org.apache.ibatis.mytest.User" resultType="org.apache.ibatis.mytest.User">
+    select * from myuser
+    <where>
+      <if test="user.id != null">
+        and id = #{user.id}
+      </if>
+      <if test="user.name != null">
+        and name = #{user.name}
+      </if>
+    </where>
   </select>
 
   <update id="updateUser" parameterType="int">
-    update myuser set name = 'lala' where id = #{HAHA}
+    update myuser
+    set name = 'lala'
+    where id = #{HAHA}
   </update>
 </mapper>

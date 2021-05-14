@@ -44,6 +44,7 @@ public class SqlSourceBuilder extends BaseBuilder {
     ParameterMappingTokenHandler handler = new ParameterMappingTokenHandler(configuration, parameterType, additionalParameters);
     GenericTokenParser parser = new GenericTokenParser("#{", "}", handler);
     String sql;
+    // 解析并替换sql中的#{}，${}并返回替换后的sql，同时解析#{}中的参数
     if (configuration.isShrinkWhitespacesInSql()) {
       sql = parser.parse(removeExtraWhitespaces(originalSql));
     } else {
@@ -53,6 +54,7 @@ public class SqlSourceBuilder extends BaseBuilder {
   }
 
   public static String removeExtraWhitespaces(String original) {
+    // StringTokenizer用来将一些换行符、制表符等替换成空格
     StringTokenizer tokenizer = new StringTokenizer(original);
     StringBuilder builder = new StringBuilder();
     boolean hasMoreTokens = tokenizer.hasMoreTokens();
@@ -92,15 +94,17 @@ public class SqlSourceBuilder extends BaseBuilder {
       Map<String, String> propertiesMap = parseParameterMapping(content);
       String property = propertiesMap.get("property");
       Class<?> propertyType;
+      // 确定属性的类型，确定类型的目的是找到类型处理器，因为入参和结果映射都是用的类型处理器
       if (metaParameters.hasGetter(property)) { // issue #448 get type from additional params
         propertyType = metaParameters.getGetterType(property);
       } else if (typeHandlerRegistry.hasTypeHandler(parameterType)) {
+        // 这里是不是有点问题，如果我们注册了一个自定义的类型处理器正好被找到，那么这个字段的类型就被任务是整个参数的类型
         propertyType = parameterType;
       } else if (JdbcType.CURSOR.name().equals(propertiesMap.get("jdbcType"))) {
         propertyType = java.sql.ResultSet.class;
       } else if (property == null || Map.class.isAssignableFrom(parameterType)) {
         propertyType = Object.class;
-      } else {
+      } else { // 自定义类，就去取类相应的属性类型
         MetaClass metaClass = MetaClass.forClass(parameterType, configuration.getReflectorFactory());
         if (metaClass.hasGetter(property)) {
           propertyType = metaClass.getGetterType(property);
@@ -108,6 +112,8 @@ public class SqlSourceBuilder extends BaseBuilder {
           propertyType = Object.class;
         }
       }
+      // 如果parameterType是map且下面有没有配置javaType和typeHandlerAlias
+      // 那么其实在这个阶段可能无法确定propertyType，可以在查询时获取实际的类型再去找typeHandler
       ParameterMapping.Builder builder = new ParameterMapping.Builder(configuration, property, propertyType);
       Class<?> javaType = propertyType;
       String typeHandlerAlias = null;
@@ -140,7 +146,7 @@ public class SqlSourceBuilder extends BaseBuilder {
       if (typeHandlerAlias != null) {
         builder.typeHandler(resolveTypeHandler(javaType, typeHandlerAlias));
       }
-      return builder.build();
+      return builder.build();// 这里会根据JavaType解析typehandler
     }
 
     private Map<String, String> parseParameterMapping(String content) {

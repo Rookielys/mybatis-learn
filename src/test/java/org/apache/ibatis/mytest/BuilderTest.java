@@ -39,7 +39,7 @@ public class BuilderTest {
     SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(configuration);
     SqlSession sqlSession = sqlSessionFactory.openSession();
     UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-    System.out.println(userMapper.selectUserById(1));
+    System.out.println(userMapper.selectUserById(new User()));
   }
 
   @Test
@@ -47,11 +47,16 @@ public class BuilderTest {
     String resource = "org/apache/ibatis/mytest/mybatis-config.xml";
     InputStream inputStream = Resources.getResourceAsStream(resource);
     SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+    Configuration configuration = sqlSessionFactory.getConfiguration();
     SqlSession sqlSession = sqlSessionFactory.openSession();
-    SqlSession sqlSession2 = sqlSessionFactory.openSession();
-//    UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-//    System.out.println(userMapper.selectUserById(1));
-    List<User> userList = sqlSession.selectList("org.apache.ibatis.mytest.UserMapper.selectUserById", 1);
+//    SqlSession sqlSession2 = sqlSessionFactory.openSession();
+    UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+    User user = new User();
+    user.setName("Jack");
+    System.out.println(userMapper.selectUserById(user));
+//    User user = new User();
+//    user.setId(1);
+//    List<User> userList = sqlSession.selectList("org.apache.ibatis.mytest.UserMapper.selectTest", user);
     //System.out.println(userList.get(0).getInfo());;
     sqlSession.close();
 //    List<User> userList2 = sqlSession2.selectList("org.apache.ibatis.mytest.UserMapper.selectUserById", 1);

@@ -31,7 +31,7 @@ import org.apache.ibatis.session.Configuration;
  */
 public class DynamicContext {
 
-  public static final String PARAMETER_OBJECT_KEY = "_parameter";
+  public static final String PARAMETER_OBJECT_KEY = "_parameter"; // 我们传入的参数对象
   public static final String DATABASE_ID_KEY = "_databaseId";
 
   static {

@@ -40,10 +40,14 @@ public class GenericTokenParser {
       return text;
     }
     char[] src = text.toCharArray();
+    // 当前处理到了哪个位置
     int offset = 0;
+    // 最后要返回的sql
     final StringBuilder builder = new StringBuilder();
+    // #{}中的表达式
     StringBuilder expression = null;
     do {
+      // 转义#，$，如果是转义的字符不处理，直接拼进SQL里
       if (start > 0 && src[start - 1] == '\\') {
         // this open token is escaped. remove the backslash and continue.
         builder.append(src, offset, start - offset - 1).append(openToken);
@@ -58,12 +62,12 @@ public class GenericTokenParser {
         builder.append(src, offset, start - offset);
         offset = start + openToken.length();
         int end = text.indexOf(closeToken, offset);
-        while (end > -1) {
-          if (end > offset && src[end - 1] == '\\') {
+        while (end > -1) { // 循环是因为如果有转义的情况接得接着找closeToken
+          if (end > offset && src[end - 1] == '\\') { // 转义不处理，直接拼进SQL里
             // this close token is escaped. remove the backslash and continue.
             expression.append(src, offset, end - offset - 1).append(closeToken);
             offset = end + closeToken.length();
-            end = text.indexOf(closeToken, offset);
+            end = text.indexOf(closeToken, offset); // 这里没有考虑#{}}这样的情况，直接找到第一个}处理，忽略多余的}
           } else {
             expression.append(src, offset, end - offset);
             break;
@@ -71,7 +75,9 @@ public class GenericTokenParser {
         }
         if (end == -1) {
           // close token was not found.
+          // 直接将剩下的SQL拼进来
           builder.append(src, start, src.length - start);
+          // 将offset置为结尾
           offset = src.length;
         } else {
           builder.append(handler.handleToken(expression.toString()));

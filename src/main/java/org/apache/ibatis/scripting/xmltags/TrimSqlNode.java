@@ -51,8 +51,10 @@ public class TrimSqlNode implements SqlNode {
 
   @Override
   public boolean apply(DynamicContext context) {
+    // 这个会获取如where标签生成的sql，并不会直接拼接到DynamicContext中
     FilteredDynamicContext filteredDynamicContext = new FilteredDynamicContext(context);
     boolean result = contents.apply(filteredDynamicContext);
+    // 这个方法会先去掉前后缀，然后再拼接上where等字符串，最后拼接到DynamicContext
     filteredDynamicContext.applyAll();
     return result;
   }

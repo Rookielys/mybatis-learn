@@ -40,6 +40,7 @@ public class ParameterExpression extends HashMap<String, String> {
   }
 
   private void parse(String expression) {
+    // 跳过空白
     int p = skipWS(expression, 0);
     if (expression.charAt(p) == '(') {
       expression(expression, p + 1);
@@ -63,10 +64,11 @@ public class ParameterExpression extends HashMap<String, String> {
     jdbcTypeOpt(expression, right);
   }
 
-  private void property(String expression, int left) {
+  private void property(String expression, int left) {// 解析第一个,:分隔符之前的字符串，作为字段属性
     if (left < expression.length()) {
       int right = skipUntil(expression, left, ",:");
       put("property", trimmedStr(expression, left, right));
+      // 解析剩下的参数
       jdbcTypeOpt(expression, right);
     }
   }
@@ -127,7 +129,7 @@ public class ParameterExpression extends HashMap<String, String> {
     }
   }
 
-  private String trimmedStr(String str, int start, int end) {
+  private String trimmedStr(String str, int start, int end) {// trim
     while (str.charAt(start) <= 0x20) {
       start++;
     }
