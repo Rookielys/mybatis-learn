@@ -115,17 +115,21 @@ public class MapperAnnotationBuilder {
   public void parse() {
     String resource = type.toString();
     if (!configuration.isResourceLoaded(resource)) {
+      // 先加载同位置同名的xml文件
       loadXmlResource();
       configuration.addLoadedResource(resource);
       assistant.setCurrentNamespace(type.getName());
+      //解析CacheNamespace注解
       parseCache();
+      //解析CacheNamespaceRef注解
       parseCacheRef();
       for (Method method : type.getMethods()) {
+        // 泛型的桥接方法和接口的default方法不行
         if (!canHaveStatement(method)) {
           continue;
         }
         if (getAnnotationWrapper(method, false, Select.class, SelectProvider.class).isPresent()
-            && method.getAnnotation(ResultMap.class) == null) {
+            && method.getAnnotation(ResultMap.class) == null) {// 如果是查询语句且没有提供ResultMap注解，就解析方法的返回值作为ResultMap
           parseResultMap(method);
         }
         try {
@@ -135,6 +139,7 @@ public class MapperAnnotationBuilder {
         }
       }
     }
+    // 尝试解析上面解析失败的mapper方法
     parsePendingMethods();
   }
 
@@ -294,12 +299,18 @@ public class MapperAnnotationBuilder {
   }
 
   void parseStatement(Method method) {
+    // 这里只取了方法的一个参数，这仅仅会影响到下面SqlSource里某些sql参数的类型判断
+    // 但是对于未知类型执行sql时会根据参数的实际类型判断
+    // 这里只取一个估计是LanguageDriver创建SQLSource时只能传一个参数类型
     final Class<?> parameterTypeClass = getParameterType(method);
     final LanguageDriver languageDriver = getLanguageDriver(method);
 
+    // 获取注解，封装MappedStatement
     getAnnotationWrapper(method, true, statementAnnotationTypes).ifPresent(statementAnnotation -> {
+      // 获取注解上的sql文本，创建SQLSource，如果文本中有<Script>就用xml的方式解析，由languageDriver处理，否则认为是静态sql或者带有的${}的sql
       final SqlSource sqlSource = buildSqlSource(statementAnnotation.getAnnotation(), parameterTypeClass, languageDriver, method);
       final SqlCommandType sqlCommandType = statementAnnotation.getSqlCommandType();
+      // 解析方法上的参数，类似于xml中sql标签中的参数
       final Options options = getAnnotationWrapper(method, false, Options.class).map(x -> (Options)x.getAnnotation()).orElse(null);
       final String mappedStatementId = type.getName() + "." + method.getName();
 
