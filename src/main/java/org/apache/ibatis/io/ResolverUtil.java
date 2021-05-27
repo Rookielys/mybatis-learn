@@ -244,6 +244,7 @@ public class ResolverUtil<T> {
    * @return the resolver util
    */
   public ResolverUtil<T> find(Test test, String packageName) {
+    // . 换为 /
     String path = getPackagePath(packageName);
 
     try {

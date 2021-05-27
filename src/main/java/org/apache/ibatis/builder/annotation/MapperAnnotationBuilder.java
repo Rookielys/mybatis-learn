@@ -128,8 +128,9 @@ public class MapperAnnotationBuilder {
         if (!canHaveStatement(method)) {
           continue;
         }
+        // 如果没有指定ResultMap，生成本方法的ResultMap
         if (getAnnotationWrapper(method, false, Select.class, SelectProvider.class).isPresent()
-            && method.getAnnotation(ResultMap.class) == null) {// 如果是查询语句且没有提供ResultMap注解，就解析方法的返回值作为ResultMap
+            && method.getAnnotation(ResultMap.class) == null) {
           parseResultMap(method);
         }
         try {

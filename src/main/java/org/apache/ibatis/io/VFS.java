@@ -220,7 +220,7 @@ public abstract class VFS {
   public List<String> list(String path) throws IOException {
     List<String> names = new ArrayList<>();
     for (URL url : getResources(path)) {
-      names.addAll(list(url, path));
+      names.addAll(list(url, path)); // 这里考虑URL表示的是一个目录或者一个jar的情况
     }
     return names;
   }
