@@ -1,5 +1,5 @@
 /**
- *    Copyright 2009-2020 the original author or authors.
+ *    Copyright 2009-2021 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -44,10 +44,12 @@ public class Plugin implements InvocationHandler {
   }
 
   public static Object wrap(Object target, Interceptor interceptor) {
+    // 根据插件上的注解获取此插件要拦截那个类的什么方法
     Map<Class<?>, Set<Method>> signatureMap = getSignatureMap(interceptor);
     Class<?> type = target.getClass();
+    // 获取target的所有接口中哪些含有被拦截方法的接口
     Class<?>[] interfaces = getAllInterfaces(type, signatureMap);
-    if (interfaces.length > 0) {
+    if (interfaces.length > 0) { // 说明target中有方法被当前插件拦截,否则直接返回target
       return Proxy.newProxyInstance(
           type.getClassLoader(),
           interfaces,
@@ -59,7 +61,6 @@ public class Plugin implements InvocationHandler {
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     try {
-      // 先执行拦截器，再执行target方法
       // 当Method是此拦截器注解里配置的类的方法是采取执行拦截器方法
       Set<Method> methods = signatureMap.get(method.getDeclaringClass());
       if (methods != null && methods.contains(method)) {
