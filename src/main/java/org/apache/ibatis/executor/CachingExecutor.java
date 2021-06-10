@@ -35,7 +35,7 @@ import org.apache.ibatis.transaction.Transaction;
 /**
  * @author Clinton Begin
  * @author Eduardo Macarron
- * 二级缓存
+ * 一级缓存
  * 装饰器模式
  */
 public class CachingExecutor implements Executor {
@@ -74,6 +74,7 @@ public class CachingExecutor implements Executor {
 
   @Override
   public int update(MappedStatement ms, Object parameterObject) throws SQLException {
+    // 清空缓存，此时并没有清空二级缓存而是清空了TransactionalCache中缓存的数据
     flushCacheIfRequired(ms);
     return delegate.update(ms, parameterObject);
   }

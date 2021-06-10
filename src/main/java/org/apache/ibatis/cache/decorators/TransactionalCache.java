@@ -96,6 +96,8 @@ public class TransactionalCache implements Cache {
   }
 
   // 将entriesToAddOnCommit和entriesMissedInCache中的缓存添加到cache中
+  // 如果在一个事务里，执行的sql都是同一个namespace的，在update之前的query结果都不会添加到二级缓存里
+  // update之后的query结果会被添加到二级缓存里
   public void commit() {
     if (clearOnCommit) {
       delegate.clear();

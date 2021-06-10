@@ -48,13 +48,15 @@ public final class MappedStatement {
   private ResultSetType resultSetType;
   // sql语句相关，包括sql文本，参数等
   private SqlSource sqlSource;
-  // 一级缓存，作用域是同一个mapper文件
+  // 二级级缓存，作用域是同一个mapper文件
   private Cache cache;
   // parametertype转为了空的parameterMap
   private ParameterMap parameterMap;
   // resulttype 转为了空的ResultMap
   private List<ResultMap> resultMaps;
+  // 是否刷新缓存，查询语句默认false，其它语句默认true
   private boolean flushCacheRequired;
+  // 是否使用缓存
   private boolean useCache;
   private boolean resultOrdered;
   private SqlCommandType sqlCommandType;

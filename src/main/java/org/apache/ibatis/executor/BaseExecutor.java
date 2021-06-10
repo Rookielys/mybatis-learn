@@ -58,7 +58,7 @@ public abstract class BaseExecutor implements Executor {
   protected Executor wrapper;
 
   protected ConcurrentLinkedQueue<DeferredLoad> deferredLoads;
-  // 二级缓存，作用域默认是session级别的
+  // 一级级缓存，作用域默认是session级别的
   protected PerpetualCache localCache;
   // 存储过程的结果缓存
   // PerpetualCache: 就是一个带名字的hashmap
@@ -334,7 +334,7 @@ public abstract class BaseExecutor implements Executor {
 
   private <E> List<E> queryFromDatabase(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException {
     List<E> list;
-    // 先往缓存里放一个正在执行的标志
+    // 先往缓存里放一个正在执行的标志，相当于清除缓存
     localCache.putObject(key, EXECUTION_PLACEHOLDER);
     try {
       // 子类实现

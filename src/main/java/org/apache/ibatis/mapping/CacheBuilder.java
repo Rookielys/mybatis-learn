@@ -38,8 +38,10 @@ import org.apache.ibatis.reflection.SystemMetaObject;
  * @author Clinton Begin
  */
 public class CacheBuilder {
+  // 缓存id，一般是namespace
   private final String id;
   private Class<? extends Cache> implementation;
+  // 缓存装饰器
   private final List<Class<? extends Cache>> decorators;
   private Integer size;
   private Long clearInterval;
@@ -91,14 +93,16 @@ public class CacheBuilder {
 
   public Cache build() {
     setDefaultImplementations();
-    // 创建缓存实例
+    // 创建缓存实例, 缓存类要有一个接收id的构造器
     Cache cache = newBaseCacheInstance(implementation, id);
-    // 设置属性
+    // 先给基础Cache类设置属性
     setCacheProperties(cache);
     // issue #352, do not apply decorators to custom caches
     if (PerpetualCache.class.equals(cache.getClass())) {
+      // 缓存装饰器要有一个接收缓存实例的构造器
       for (Class<? extends Cache> decorator : decorators) {
         cache = newCacheDecoratorInstance(decorator, cache);
+        // 给装饰器设置属性
         setCacheProperties(cache);
       }
       cache = setStandardDecorators(cache);
