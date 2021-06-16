@@ -305,7 +305,9 @@ public class XMLConfigBuilder extends BaseBuilder {
       }
       for (XNode child : context.getChildren()) {
         String id = child.getStringAttribute("id");
+        // 只加载默认的或指定的环境
         if (isSpecifiedEnvironment(id)) {
+          // 创建TransactionFactory，用来生成事务对象，一般是根据connection开启事务
           TransactionFactory txFactory = transactionManagerElement(child.evalNode("transactionManager"));
           // 我们可以通过在TypeAliasRegistry中注册一个自己的DataSourceFactory来使用第三方的数据源
           DataSourceFactory dsFactory = dataSourceElement(child.evalNode("dataSource"));
